@@ -43,7 +43,7 @@ const FESTIVAL_DETAILS = {
   }
 }
 
-const WHATSAPP_NUMBER = "919957995530"
+const WHATSAPP_NUMBER = "919181051445"
 
 export default function FestivalModal({
   isOpen,

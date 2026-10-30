@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Baloo+2:wght@600;800&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=DM+Serif+Display:ital@0;1&display=swap');
 @import "tailwindcss";
 
 @layer base {
@@ -7,7 +6,20 @@
     --font-anton: 'Anton', sans-serif;
     --font-baloo: 'Baloo 2', sans-serif;
     --font-dm-serif: 'DM Serif Display', serif;
+    --font-bagel: 'Bagel Fat One', Arial, sans-serif;
+    --font-nunito: 'Nunito', Arial, sans-serif;
   }
+}
+
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  -webkit-text-size-adjust: 100%;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
@@ -15,6 +27,24 @@ body {
   background: #141210;
   color: #111;
   font-family: var(--font-bricolage);
+}
+
+/* Ensure inputs never auto-zoom on mobile devices */
+input, select, textarea {
+  font-size: 16px !important;
+  max-width: 100%;
+}
+
+/* Horizontal pill scrollbar container */
+.scroll-nav {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.scroll-nav::-webkit-scrollbar {
+  display: none;
 }
 
 a {
@@ -60,8 +90,8 @@ a:hover {
 }
 
 .tab.on-lgf {
-  background: #F2B705;
-  color: #3a0d14;
+  background: #FFC93C;
+  color: #1A0F0C;
 }
 
 .tab.on-dd {
@@ -72,6 +102,20 @@ a:hover {
 .tab.on-bwc {
   background: #F5C46B;
   color: #2A1612;
+}
+
+@media (max-width: 640px) {
+  .tab {
+    padding: 8px 14px;
+    font-size: 13px;
+    min-height: 40px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .tab small {
+    font-size: 11px;
+    margin-top: 1px;
+  }
 }
 
 /* Winter Carnival Textures */
