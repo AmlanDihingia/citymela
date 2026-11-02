@@ -18,9 +18,12 @@ export const supabase = createClient()
 
 export type ApplicationPayload = {
   id?: string
+  ticket_id?: string
+  checked_in?: boolean
   created_at?: string
   brand_name: string
   contact_name: string
+  email?: string | null
   whatsapp_number: string
   instagram_handle?: string | null
   kitchen_type: string

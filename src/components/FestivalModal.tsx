@@ -56,6 +56,7 @@ export default function FestivalModal({
   const [vendorData, setVendorData] = useState({
     brandName: '',
     contactName: '',
+    email: '',
     phone: '',
     category: '',
     notes: ''
@@ -63,6 +64,7 @@ export default function FestivalModal({
 
   const [alertData, setAlertData] = useState({
     name: '',
+    email: '',
     phone: '',
     interest: ''
   })
@@ -88,6 +90,7 @@ export default function FestivalModal({
     const payload = {
       brand_name: vendorData.brandName.trim(),
       contact_name: vendorData.contactName.trim(),
+      email: vendorData.email.trim(),
       whatsapp_number: digits.slice(-10),
       kitchen_type: vendorData.category || 'Vendor / Retail',
       category: `${currentFest.name} - ${vendorData.category || 'General'}`,
@@ -135,6 +138,7 @@ export default function FestivalModal({
     const payload = {
       brand_name: `${alertData.name.trim()} (Visitor)`,
       contact_name: alertData.name.trim(),
+      email: alertData.email.trim(),
       whatsapp_number: digits.slice(-10),
       kitchen_type: 'Visitor / Shopper',
       category: `${currentFest.name} - Updates & Deal Alerts`,
@@ -286,6 +290,19 @@ export default function FestivalModal({
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#6B5560] mb-1.5">
+                  Email <span className="text-xs font-normal text-[#6B5560]">(optional — for enquiry copy)</span>
+                </label>
+                <input
+                  type="email"
+                  value={vendorData.email}
+                  onChange={e => setVendorData({ ...vendorData, email: e.target.value })}
+                  placeholder="e.g. brand@example.com"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#EADDD3] bg-white text-[#141210] focus:outline-none focus:ring-2 focus:ring-[#141210]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#6B5560] mb-1.5">
                   Category / Offerings
                 </label>
                 <select
@@ -379,6 +396,19 @@ export default function FestivalModal({
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#EADDD3] bg-white text-[#141210] focus:outline-none focus:ring-2 focus:ring-[#141210]"
                 />
                 <p className="text-xs text-[#6B5560] mt-1">We’ll send deal alerts, lineup drops, and passes directly to your WhatsApp.</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#6B5560] mb-1.5">
+                  Email <span className="text-xs font-normal text-[#6B5560]">(optional — for festival updates)</span>
+                </label>
+                <input
+                  type="email"
+                  value={alertData.email}
+                  onChange={e => setAlertData({ ...alertData, email: e.target.value })}
+                  placeholder="e.g. ananya@example.com"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#EADDD3] bg-white text-[#141210] focus:outline-none focus:ring-2 focus:ring-[#141210]"
+                />
               </div>
 
               {error && (

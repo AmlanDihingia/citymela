@@ -168,6 +168,11 @@ export default async function DashboardPage() {
                         </td>
                         <td className="px-5 py-4">
                           <div className="font-bold text-white text-base">{app.brand_name}</div>
+                          {app.ticket_id && (
+                            <div className="inline-block px-2 py-0.5 mt-1 rounded bg-[#2a2622] text-[#FFD400] font-mono text-[11px] font-bold">
+                              {app.ticket_id}
+                            </div>
+                          )}
                           {app.instagram_handle && (
                             <div className="text-[#FFD400] text-xs mt-0.5">{app.instagram_handle}</div>
                           )}
@@ -175,6 +180,9 @@ export default async function DashboardPage() {
                         <td className="px-5 py-4">
                           <div className="font-semibold text-white">{app.contact_name}</div>
                           <div className="text-xs text-[#a39b8f] mt-0.5">+91 {app.whatsapp_number}</div>
+                          {app.email && (
+                            <div className="text-xs text-[#FFD400]/80 mt-0.5">{app.email}</div>
+                          )}
                         </td>
                         <td className="px-5 py-4">
                           <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#FFD400]/20 text-[#FFD400]">
@@ -191,7 +199,17 @@ export default async function DashboardPage() {
                             {app.source || 'landing'}
                           </span>
                         </td>
-                        <td className="px-5 py-4 text-right">
+                        <td className="px-5 py-4 text-right whitespace-nowrap">
+                          {app.ticket_id && (
+                            <a
+                              href={`/verify?id=${encodeURIComponent(app.ticket_id)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#2a2622] hover:bg-[#38332e] text-[#FFD400] rounded-full text-xs font-bold transition mr-2"
+                            >
+                              Scan QR
+                            </a>
+                          )}
                           <a
                             href={waUrl}
                             target="_blank"

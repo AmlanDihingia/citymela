@@ -47,6 +47,7 @@ export default function ApplicationForm() {
   const [formData, setFormData] = useState({
     brand: '',
     contact: '',
+    email: '',
     phone: '',
     instagram: '',
     type: '',
@@ -63,7 +64,13 @@ export default function ApplicationForm() {
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
-  const [submittedData, setSubmittedData] = useState<{ brand: string; contact: string; category: string } | null>(null)
+  const [submittedData, setSubmittedData] = useState<{
+    brand: string
+    contact: string
+    email: string
+    category: string
+    ticket_id?: string
+  } | null>(null)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -84,9 +91,13 @@ export default function ApplicationForm() {
     setError('')
 
     const digits = formData.phone.replace(/\D/g, '')
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
     if (!formData.brand.trim()) return setError('Enter your brand or kitchen name.')
     if (!formData.contact.trim()) return setError('Enter your name.')
+    if (formData.email.trim() && !emailRegex.test(formData.email.trim())) {
+      return setError('Please enter a valid email address.')
+    }
     if (digits.length < 10) return setError('Enter a valid 10-digit WhatsApp number.')
     if (!formData.type) return setError('Tell us what kind of kitchen you are.')
     if (!formData.category) return setError('Choose your category.')
@@ -100,6 +111,7 @@ export default function ApplicationForm() {
     const payload = {
       brand_name: formData.brand.trim(),
       contact_name: formData.contact.trim(),
+      email: formData.email.trim().toLowerCase(),
       whatsapp_number: digits.slice(-10),
       instagram_handle: formData.instagram.trim(),
       kitchen_type: formData.type,
@@ -129,7 +141,9 @@ export default function ApplicationForm() {
       setSubmittedData({
         brand: payload.brand_name,
         contact: payload.contact_name,
+        email: payload.email,
         category: payload.category,
+        ticket_id: result.ticket_id || result.data?.ticket_id,
       })
       setSubmitted(true)
     } catch (err: any) {
@@ -155,9 +169,37 @@ export default function ApplicationForm() {
         <h3 className="font-heading text-3xl font-bold text-[#B3122A] mb-2">
           Application received!
         </h3>
-        <p className="text-[#6B5560] text-lg mb-6 max-w-md mx-auto">
-          Thanks, <span className="font-semibold text-[#2A1320]">{firstName}</span>. We&apos;ll be in touch on WhatsApp about your slot.
+        <p className="text-[#6B5560] text-lg mb-2 max-w-md mx-auto">
+          Thanks, <span className="font-semibold text-[#2A1320]">{firstName}</span>.
+          {submittedData.email ? (
+            <> A confirmation has been sent to <span className="font-semibold text-[#B3122A]">{submittedData.email}</span>.</>
+          ) : (
+            <> Your application has been recorded.</>
+          )}
         </p>
+        <p className="text-[#6B5560] text-sm mb-6 max-w-md mx-auto">
+          We&apos;ll also be in touch on WhatsApp about your slot and layout allotment.
+        </p>
+
+        {submittedData.ticket_id && (
+          <div className="mb-6 p-4 bg-white border border-[#EADDD3] rounded-xl max-w-sm mx-auto shadow-sm">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#6B5560] block mb-1">
+              Your Application Ref ID
+            </span>
+            <div className="font-mono text-xl font-black text-[#B3122A]">
+              {submittedData.ticket_id}
+            </div>
+            <a
+              href={`/pass/${encodeURIComponent(submittedData.ticket_id)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-3 px-4 py-2 bg-[#1A0F0C] text-white text-xs font-bold rounded-full hover:bg-[#332e29] transition"
+            >
+              View Digital Pass &amp; QR Code →
+            </a>
+          </div>
+        )}
+
         <a
           href={waUrl}
           target="_blank"
@@ -206,6 +248,21 @@ export default function ApplicationForm() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
+          <label htmlFor="email" className="block text-sm font-semibold text-[#2A1320] mb-1">
+            Email address <span className="text-xs text-[#6B5560] font-normal">(optional — for email confirmation)</span>
+          </label>
+          <input
+            id="email"
+            type="email"
+            inputMode="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="e.g. rahul@example.com"
+            className="w-full px-3.5 py-2.5 rounded-lg border border-[#EADDD3] bg-white text-[#2A1320] text-base focus:outline-none focus:border-[#B3122A] focus:ring-1 focus:ring-[#B3122A] transition"
+            autoComplete="email"
+          />
+        </div>
+        <div>
           <label htmlFor="phone" className="block text-sm font-semibold text-[#2A1320] mb-1">
             WhatsApp number <span className="text-[#B3122A]">*</span>
           </label>
@@ -220,6 +277,9 @@ export default function ApplicationForm() {
             autoComplete="tel"
           />
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="instagram" className="block text-sm font-semibold text-[#2A1320] mb-1">
             Instagram handle
@@ -233,23 +293,22 @@ export default function ApplicationForm() {
             className="w-full px-3.5 py-2.5 rounded-lg border border-[#EADDD3] bg-white text-[#2A1320] text-base focus:outline-none focus:border-[#B3122A] focus:ring-1 focus:ring-[#B3122A] transition"
           />
         </div>
-      </div>
-
-      <div>
-        <label htmlFor="type" className="block text-sm font-semibold text-[#2A1320] mb-1">
-          What kind of kitchen are you? <span className="text-[#B3122A]">*</span>
-        </label>
-        <select
-          id="type"
-          value={formData.type}
-          onChange={handleChange}
-          className="w-full px-3.5 py-2.5 rounded-lg border border-[#EADDD3] bg-white text-[#2A1320] text-base focus:outline-none focus:border-[#B3122A] focus:ring-1 focus:ring-[#B3122A] transition"
-        >
-          <option value="">Select kitchen type</option>
-          {KITCHEN_TYPES.map(t => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
+        <div>
+          <label htmlFor="type" className="block text-sm font-semibold text-[#2A1320] mb-1">
+            What kind of kitchen are you? <span className="text-[#B3122A]">*</span>
+          </label>
+          <select
+            id="type"
+            value={formData.type}
+            onChange={handleChange}
+            className="w-full px-3.5 py-2.5 rounded-lg border border-[#EADDD3] bg-white text-[#2A1320] text-base focus:outline-none focus:border-[#B3122A] focus:ring-1 focus:ring-[#B3122A] transition"
+          >
+            <option value="">Select kitchen type</option>
+            {KITCHEN_TYPES.map(t => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div>

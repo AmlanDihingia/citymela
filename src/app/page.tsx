@@ -42,7 +42,7 @@ const PASS_DEFS: PassDef[] = [
 const money = (n: number) => (n === 0 ? 'Free' : '₹' + n.toLocaleString('en-IN'))
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<FestivalId>('dd')
+  const [activeTab, setActiveTab] = useState<FestivalId>('lgf')
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'vendor' | 'alert'>('vendor')
 
@@ -76,6 +76,7 @@ export default function Home() {
     age: '',
     school: '',
     parent: '',
+    email: '',
     phone: '',
     consent: false,
   })
@@ -91,6 +92,7 @@ export default function Home() {
   })
   const [familySubmitting, setFamilySubmitting] = useState(false)
   const [familySuccess, setFamilySuccess] = useState('')
+  const [familyPassId, setFamilyPassId] = useState('')
   const [familyError, setFamilyError] = useState('')
 
   const [schoolForm, setSchoolForm] = useState({
@@ -207,6 +209,9 @@ export default function Home() {
     const phoneDigits = kidsForm.phone.replace(/\D/g, '').slice(-10)
     if (!kidsForm.name.trim()) return setKidsError('Please enter the participant’s name.')
     if (!kidsForm.parent.trim()) return setKidsError('Please enter the parent or guardian’s name.')
+    if (kidsForm.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(kidsForm.email.trim())) {
+      return setKidsError('Please enter a valid email address.')
+    }
     if (phoneDigits.length < 10) return setKidsError('Please enter a valid 10-digit WhatsApp number.')
     if (!kidsForm.consent) return setKidsError('Parent or guardian consent is required to register.')
 
@@ -218,25 +223,27 @@ export default function Home() {
         body: JSON.stringify({
           brand_name: `Activity: ${kidsForm.name.trim()} (${kidsForm.activity})`,
           contact_name: kidsForm.parent.trim(),
+          email: kidsForm.email.trim(),
           whatsapp_number: phoneDigits,
           kitchen_type: 'Activity Registration',
           category: `LGF - ${kidsForm.activity}`,
           hero_dishes: `Participant: ${kidsForm.name.trim()}, Age: ${kidsForm.age || 'N/A'}, School: ${kidsForm.school || 'N/A'}`,
           stall_tier: kidsForm.activity,
           location_area: kidsForm.school || 'Guwahati',
-          additional_notes: `Consent: Yes, Activity: ${kidsForm.activity}`,
+          additional_notes: `Consent: Yes, Activity: ${kidsForm.activity}${kidsForm.email ? `, Email: ${kidsForm.email.trim()}` : ''}`,
           source: 'lgf-activity-signup',
         }),
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        setKidsSuccess('Registration received! We have noted your slot and will WhatsApp you with confirmation details.')
+        setKidsSuccess('Registration received! We have noted your slot and will WhatsApp and email you with confirmation details.')
         setKidsForm({
           activity: "Kids’ Open Mic (₹199 + GST)",
           name: '',
           age: '',
           school: '',
           parent: '',
+          email: '',
           phone: '',
           consent: false,
         })
@@ -268,6 +275,7 @@ export default function Home() {
         body: JSON.stringify({
           brand_name: `Family Pass: ${familyForm.name.trim()}`,
           contact_name: familyForm.name.trim(),
+          email: familyForm.email.trim(),
           whatsapp_number: phoneDigits,
           kitchen_type: 'Family Pass',
           category: 'LGF - Family Pass Booking',
@@ -280,7 +288,9 @@ export default function Home() {
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        setFamilySuccess('Family pass registered! Your booking details and QR pass confirmation will be sent to your WhatsApp.')
+        const ticketId = data.ticket_id || 'CONFIRMED'
+        setFamilyPassId(ticketId)
+        setFamilySuccess(`Family pass registered! Your Pass ID is ${ticketId}. Details and QR pass have been sent to your WhatsApp & Email.`)
         setFamilyForm({ name: '', email: '', phone: '', school: '' })
       } else {
         setFamilyError(data.error || 'Failed to register family pass. Please try again.')
@@ -311,6 +321,7 @@ export default function Home() {
         body: JSON.stringify({
           brand_name: schoolForm.name.trim(),
           contact_name: schoolForm.contact.trim(),
+          email: schoolForm.email.trim(),
           whatsapp_number: phoneDigits,
           kitchen_type: 'School Championship',
           category: `LGF School - ${schoolForm.type}`,
@@ -362,6 +373,7 @@ export default function Home() {
         body: JSON.stringify({
           brand_name: stallForm.biz.trim(),
           contact_name: stallForm.name.trim(),
+          email: stallForm.email.trim(),
           whatsapp_number: phoneDigits,
           kitchen_type: 'LGF Stall',
           category: `LGF Stall - ${stallForm.type}`,
@@ -745,6 +757,18 @@ export default function Home() {
                     />
                   </label>
 
+                  <label htmlFor="k-email" style={{ display: 'flex', flexDirection: 'column', gap: 6, fontWeight: 800, fontSize: 14 }}>
+                    Email (optional — for confirmation)
+                    <input
+                      id="k-email"
+                      type="email"
+                      placeholder="parent@example.com"
+                      value={kidsForm.email}
+                      onChange={(e) => setKidsForm({ ...kidsForm, email: e.target.value })}
+                      style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 16, padding: '12px 14px', border: '2px solid #1A0F0C', borderRadius: 12, background: '#FFFFFF', color: '#1A0F0C', minHeight: 48 }}
+                    />
+                  </label>
+
                   <label htmlFor="k-phone" style={{ display: 'flex', flexDirection: 'column', gap: 6, fontWeight: 800, fontSize: 14 }}>
                     Parent or guardian’s WhatsApp
                     <input
@@ -922,8 +946,29 @@ export default function Home() {
                   </h3>
 
                   {familySuccess && (
-                    <div style={{ background: '#FFC93C', color: '#1A0F0C', padding: '12px 14px', borderRadius: 12, fontWeight: 800, fontSize: 14 }}>
-                      ✓ {familySuccess}
+                    <div style={{ background: '#FFC93C', color: '#1A0F0C', padding: '14px', borderRadius: 14, fontWeight: 800, fontSize: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      <div>✓ {familySuccess}</div>
+                      {familyPassId && (
+                        <a
+                          href={`/pass/${encodeURIComponent(familyPassId)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: '#1A0F0C',
+                            color: '#FFFFFF',
+                            textDecoration: 'none',
+                            fontWeight: 900,
+                            padding: '10px 18px',
+                            borderRadius: 999,
+                            fontSize: 13,
+                          }}
+                        >
+                          View &amp; Download Digital QR Pass →
+                        </a>
+                      )}
                     </div>
                   )}
                   {familyError && (
@@ -946,7 +991,7 @@ export default function Home() {
                       />
                     </label>
                     <label htmlFor="f-email" style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 14 }}>
-                      Email
+                      Email (optional — for pass confirmation)
                       <input
                         id="f-email"
                         type="email"
@@ -1197,7 +1242,7 @@ export default function Home() {
                   </label>
 
                   <label htmlFor="s-email" style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 14 }}>
-                    Email
+                    Email (optional — for championship details)
                     <input
                       id="s-email"
                       type="email"
@@ -1540,7 +1585,7 @@ export default function Home() {
                   </label>
 
                   <label htmlFor="st-email" style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 14 }}>
-                    Email
+                    Email (optional — for invoice & confirmation)
                     <input
                       id="st-email"
                       type="email"
