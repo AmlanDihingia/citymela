@@ -79,6 +79,12 @@ export default async function DashboardPage() {
 
           <div className="flex flex-wrap items-center gap-3">
             <a
+              href="/verify"
+              className="inline-flex items-center gap-2 bg-[#FFD400] hover:bg-[#e6bf00] text-[#111] px-5 py-2.5 rounded-full text-sm font-bold transition shadow-md"
+            >
+              📷 Open Gate Scanner
+            </a>
+            <a
               href="/dashboard"
               className="inline-flex items-center gap-2 bg-[#2a2622] hover:bg-[#38332e] text-[#d8d2c8] px-4 py-2.5 rounded-full text-sm font-semibold transition"
             >
@@ -87,7 +93,7 @@ export default async function DashboardPage() {
             </a>
             <a
               href="/"
-              className="inline-flex items-center gap-2 bg-[#FFD400] hover:bg-[#e6bf00] text-[#111] px-5 py-2.5 rounded-full text-sm font-bold transition shadow-md"
+              className="inline-flex items-center gap-2 bg-[#2a2622] hover:bg-[#38332e] text-[#d8d2c8] px-4 py-2.5 rounded-full text-sm font-semibold transition"
             >
               ← View Landing Page
             </a>
@@ -169,8 +175,15 @@ export default async function DashboardPage() {
                         <td className="px-5 py-4">
                           <div className="font-bold text-white text-base">{app.brand_name}</div>
                           {app.ticket_id && (
-                            <div className="inline-block px-2 py-0.5 mt-1 rounded bg-[#2a2622] text-[#FFD400] font-mono text-[11px] font-bold">
-                              {app.ticket_id}
+                            <div className="inline-flex items-center gap-1.5 mt-1">
+                              <span className="px-2 py-0.5 rounded bg-[#2a2622] text-[#FFD400] font-mono text-[11px] font-bold">
+                                {app.ticket_id}
+                              </span>
+                              {app.checked_in && (
+                                <span className="px-2 py-0.5 rounded bg-[#16A34A]/20 text-[#22c55e] text-[10px] font-bold border border-[#16A34A]/40">
+                                  ✓ Checked In
+                                </span>
+                              )}
                             </div>
                           )}
                           {app.instagram_handle && (
@@ -200,9 +213,9 @@ export default async function DashboardPage() {
                           </span>
                         </td>
                         <td className="px-5 py-4 text-right whitespace-nowrap">
-                          {app.ticket_id && (
+                          {(app.ticket_id || app.id) && (
                             <a
-                              href={`/verify?id=${encodeURIComponent(app.ticket_id)}`}
+                              href={`/verify?id=${encodeURIComponent(app.ticket_id || app.id || '')}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#2a2622] hover:bg-[#38332e] text-[#FFD400] rounded-full text-xs font-bold transition mr-2"

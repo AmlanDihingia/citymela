@@ -40,16 +40,64 @@ export async function POST(request: Request) {
     if (supabaseUrl && !supabaseUrl.includes('placeholder.supabase.co')) {
       try {
         const supabase = createClient()
-        const { error } = await supabase
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(ticketId)
+
+        // 2A. Update by ticket_id directly
+        const updateByTicket = await supabase
           .from('applications')
           .update({
             checked_in: true,
             status: 'approved',
           })
-          .or(`ticket_id.eq.${ticketId},id.eq.${ticketId}`)
+          .ilike('ticket_id', ticketId)
+          .select('id, ticket_id')
 
-        if (!error) {
+        if (!updateByTicket.error && Array.isArray(updateByTicket.data) && updateByTicket.data.length > 0) {
           updatedSupabase = true
+        }
+
+        // 2B. If not updated and is UUID, update by id column
+        if (!updatedSupabase && isUuid) {
+          const updateById = await supabase
+            .from('applications')
+            .update({
+              checked_in: true,
+              status: 'approved',
+            })
+            .eq('id', ticketId)
+            .select('id, ticket_id')
+
+          if (!updateById.error && Array.isArray(updateById.data) && updateById.data.length > 0) {
+            updatedSupabase = true
+          }
+        }
+
+        // 2C. Fallback: Find the row by scanning recent applications and update by row id
+        if (!updatedSupabase) {
+          const { data: recentRows } = await supabase
+            .from('applications')
+            .select('id, ticket_id, whatsapp_number')
+            .limit(500)
+
+          const target = recentRows?.find(
+            (r: any) =>
+              (r.ticket_id && r.ticket_id.trim().toLowerCase() === ticketId.trim().toLowerCase()) ||
+              (r.id && String(r.id).trim().toLowerCase() === ticketId.trim().toLowerCase())
+          )
+
+          if (target?.id) {
+            const fallbackUpdate = await supabase
+              .from('applications')
+              .update({
+                checked_in: true,
+                status: 'approved',
+              })
+              .eq('id', target.id)
+
+            if (!fallbackUpdate.error) {
+              updatedSupabase = true
+            }
+          }
         }
       } catch (sbErr) {
         console.warn('Supabase checkin error:', sbErr)

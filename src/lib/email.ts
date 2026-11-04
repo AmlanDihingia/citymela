@@ -5,8 +5,8 @@ const resendApiKey = process.env.RESEND_API_KEY
 const resend = resendApiKey ? new Resend(resendApiKey) : null
 
 // Default sender and admin addresses from environment
-const FROM_EMAIL = process.env.EMAIL_FROM || 'Pet Puja 2026 <onboarding@resend.dev>'
-const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || process.env.ORGANIZER_EMAIL || ''
+const FROM_EMAIL = process.env.EMAIL_FROM || 'City Mela <passes@citymela.space>'
+const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || process.env.ORGANIZER_EMAIL || 'mailcitymela@gmail.com'
 
 function isFamilyPassType(data: ApplicationPayload): boolean {
   return (
@@ -363,6 +363,7 @@ export async function sendApplicationEmails(data: ApplicationPayload): Promise<E
       const adminResponse = await resend.emails.send({
         from: FROM_EMAIL,
         to: ADMIN_EMAIL,
+        replyTo: data.email || undefined,
         subject: adminSubject,
         html: renderAdminEmailHtml(data),
       })
@@ -388,6 +389,7 @@ export async function sendApplicationEmails(data: ApplicationPayload): Promise<E
       const customerResponse = await resend.emails.send({
         from: FROM_EMAIL,
         to: data.email,
+        replyTo: ADMIN_EMAIL,
         subject: customerSubject,
         html: renderCustomerEmailHtml(data),
       })
