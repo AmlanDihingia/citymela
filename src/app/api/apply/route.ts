@@ -128,6 +128,18 @@ export async function POST(request: Request) {
     // 3. Send email notifications to both Customer and Admin via Resend
     const emailResult = await sendApplicationEmails(payload)
 
+    // Log email result explicitly for server logs (visible in Hostinger Node.js logs)
+    if (!emailResult.adminSent) {
+      console.error(`[EMAIL FAIL] Admin email NOT sent for ${ticketId}. Error: ${emailResult.adminError}`)
+    } else {
+      console.log(`[EMAIL OK] Admin email sent for ${ticketId}`)
+    }
+    if (payload.email && !emailResult.customerSent) {
+      console.error(`[EMAIL FAIL] Customer email NOT sent for ${ticketId} to ${payload.email}. Error: ${emailResult.customerError}`)
+    } else if (payload.email) {
+      console.log(`[EMAIL OK] Customer email sent for ${ticketId} to ${payload.email}`)
+    }
+
     // 4. Send automated WhatsApp message
     const whatsappResult = await sendWhatsAppPass(payload)
 

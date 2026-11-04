@@ -1,12 +1,20 @@
 import { Resend } from 'resend'
 import { ApplicationPayload } from './supabase'
 
+// Read API key at module load — it never changes at runtime
 const resendApiKey = process.env.RESEND_API_KEY
 const resend = resendApiKey ? new Resend(resendApiKey) : null
 
-// Default sender and admin addresses from environment
-const FROM_EMAIL = process.env.EMAIL_FROM || 'City Mela <passes@citymela.space>'
-const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || process.env.ORGANIZER_EMAIL || 'mailcitymela@gmail.com'
+// Helper to get sender config at call time (not at module load)
+// This ensures production env vars are always respected
+function getEmailConfig() {
+  const FROM_EMAIL = process.env.EMAIL_FROM || 'City Mela <passes@citymela.space>'
+  const ADMIN_EMAIL =
+    process.env.ADMIN_NOTIFICATION_EMAIL ||
+    process.env.ORGANIZER_EMAIL ||
+    'mailcitymela@gmail.com'
+  return { FROM_EMAIL, ADMIN_EMAIL }
+}
 
 function isFamilyPassType(data: ApplicationPayload): boolean {
   return (
@@ -345,12 +353,17 @@ export async function sendApplicationEmails(data: ApplicationPayload): Promise<E
 
   if (!resend) {
     console.warn(
-      'Resend is not initialized. Please set RESEND_API_KEY in .env.local to enable email notifications.'
+      'Resend is not initialized. Please set RESEND_API_KEY in environment variables to enable email notifications.'
     )
     result.adminError = 'RESEND_API_KEY is not configured'
     result.customerError = 'RESEND_API_KEY is not configured'
     return result
   }
+
+  // Read config at call time (not module load) for production safety
+  const { FROM_EMAIL, ADMIN_EMAIL } = getEmailConfig()
+
+  console.log(`[EMAIL] Sending from: ${FROM_EMAIL} | Admin: ${ADMIN_EMAIL} | Key prefix: ${resendApiKey?.substring(0, 8)}...`)
 
   const isFamily = isFamilyPassType(data)
   const isSchool = isSchoolType(data)
