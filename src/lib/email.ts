@@ -240,45 +240,66 @@ function renderCustomerEmailHtml(data: ApplicationPayload) {
         }
       </div>
 
-      <!-- Digital QR Entry Pass -->
-      <div style="text-align: center; background: #FFFBF4; border: 2px dashed #B3122A; border-radius: 12px; padding: 22px 18px; margin: 24px 0;">
-        <span style="display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #111111; background: #FFD400; padding: 4px 12px; border-radius: 999px;">
-          Official Festival Pass
-        </span>
-        <div style="margin: 14px auto 10px; display: inline-block; background: #FFFFFF; padding: 10px; border-radius: 8px; border: 1px solid #EADDD3;">
-          <img src="${qrImageUrl}" alt="Scan Pass QR" width="180" height="180" style="display: block; margin: 0 auto;" />
+      <!-- Digital QR Entry Pass — Full Self-Contained Card (no external links) -->
+      <div style="text-align: center; background: linear-gradient(160deg, #1A0F0C 0%, #2e1a16 100%); border-radius: 16px; padding: 28px 20px; margin: 24px 0; box-shadow: 0 6px 24px rgba(26,15,12,0.25);">
+        <!-- OFFICIAL PASS badge -->
+        <div style="margin-bottom: 14px;">
+          <span style="display: inline-block; font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #111111; background: #FFD400; padding: 5px 16px; border-radius: 999px;">
+            🎟️ Official Festival Pass
+          </span>
         </div>
-        <div style="font-family: monospace; font-size: 20px; font-weight: 900; letter-spacing: 1px; color: #1A0F0C;">
+
+        <!-- QR Code -->
+        <div style="display: inline-block; background: #FFFFFF; padding: 14px; border-radius: 12px; border: 3px solid #FFD400; margin-bottom: 16px;">
+          <img src="${qrImageUrl}" alt="Entry QR Code for ${escapeHtml(ticketId)}" width="200" height="200" style="display: block; border-radius: 4px;" />
+        </div>
+
+        <!-- Ticket ID -->
+        <div style="font-family: 'Courier New', Courier, monospace; font-size: 22px; font-weight: 900; letter-spacing: 3px; color: #FFD400; margin-bottom: 6px;">
           ${escapeHtml(ticketId)}
         </div>
-        <div style="font-size: 14px; font-weight: 700; color: #7A1F2B; margin-top: 4px;">
-          ${escapeHtml(data.contact_name)} • ${escapeHtml(data.stall_tier || data.category)}
-        </div>
-        <p style="font-size: 12px; color: #6B5560; margin: 8px 0 12px;">
-          Show this QR code on your phone at the entrance gate for fast check-in.
-        </p>
-        <div>
-          <a href="${verifyUrl}" style="display: inline-block; background: #1A0F0C; color: #FFFFFF !important; text-decoration: none; font-size: 12px; font-weight: 700; padding: 8px 18px; border-radius: 999px;" target="_blank">
-            Open Digital Ticket Link →
-          </a>
-        </div>
-      </div>
 
-      <div class="summary-box">
-        <div class="summary-title">Booking Details</div>
-        <div class="summary-item"><strong>Ticket ID:</strong> ${escapeHtml(ticketId)}</div>
-        <div class="summary-item"><strong>${isFamily || isVisitor ? 'Name' : 'Brand / Item'}:</strong> ${escapeHtml(data.brand_name)}</div>
-        <div class="summary-item"><strong>Details:</strong> ${escapeHtml(data.stall_tier)}</div>
-        <div class="summary-item"><strong>Particulars:</strong> ${escapeHtml(data.hero_dishes)}</div>
-        <div class="summary-item"><strong>Registered WhatsApp:</strong> +91 ${escapeHtml(data.whatsapp_number)}</div>
+        <!-- Name & Pass type -->
+        <div style="font-size: 20px; font-weight: 800; color: #FFFFFF; margin-bottom: 2px;">
+          ${escapeHtml(data.contact_name)}
+        </div>
+        <div style="font-size: 14px; color: #d8a97d; font-weight: 600; margin-bottom: 20px;">
+          ${escapeHtml(data.stall_tier || data.category)}
+        </div>
+
+        <!-- Pass detail rows inside the dark card -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; text-align: left; background: rgba(255,255,255,0.07); border-radius: 10px; overflow: hidden; margin-bottom: 20px;">
+          ${data.hero_dishes ? `<tr>
+            <td style="padding: 9px 14px; font-size: 12px; color: #c9b8b2; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.08); width: 42%;">Inclusions</td>
+            <td style="padding: 9px 14px; font-size: 12px; color: #fff; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08);">${escapeHtml(data.hero_dishes)}</td>
+          </tr>` : ''}
+          ${data.location_area ? `<tr>
+            <td style="padding: 9px 14px; font-size: 12px; color: #c9b8b2; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.08);">School / City</td>
+            <td style="padding: 9px 14px; font-size: 12px; color: #fff; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08);">${escapeHtml(data.location_area)}</td>
+          </tr>` : ''}
+          <tr>
+            <td style="padding: 9px 14px; font-size: 12px; color: #c9b8b2; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.08);">WhatsApp</td>
+            <td style="padding: 9px 14px; font-size: 12px; color: #fff; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08);">+91 ${escapeHtml(data.whatsapp_number)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 14px; font-size: 12px; color: #c9b8b2; font-weight: 700;">Festival</td>
+            <td style="padding: 9px 14px; font-size: 12px; color: #fff; font-weight: 600;">14–15 Nov 2026 • Brahmaputra Riverfront</td>
+          </tr>
+        </table>
+
+        <!-- Gate instruction -->
+        <p style="font-size: 13px; color: #c9b8b2; margin: 0; line-height: 1.6;">
+          📲 <strong style="color: #FFD400;">Show this email at the entrance gate</strong> for instant QR scan and check-in.<br/>
+          No printout needed — your phone screen is enough!
+        </p>
       </div>
 
       <div class="steps-box">
-        <div class="steps-title">At the Festival Gate:</div>
+        <div class="steps-title">How to Enter the Festival:</div>
         <ol class="steps-list">
-          <li><strong>Keep this QR ready:</strong> You can show this email, screenshot the QR code, or open the link above.</li>
-          <li><strong>Gate Scan:</strong> Our entrance team will scan this QR code directly off your phone screen.</li>
-          <li><strong>Enjoy the Festival:</strong> Walk straight in and enjoy the shows, workshops, stalls, and lucky draws!</li>
+          <li><strong>Keep this email open</strong> on your phone before reaching the gate.</li>
+          <li><strong>Gate staff will scan</strong> the QR code directly from your screen.</li>
+          <li><strong>Walk straight in</strong> and enjoy the shows, workshops, stalls &amp; lucky draws!</li>
         </ol>
       </div>
 
@@ -287,12 +308,12 @@ function renderCustomerEmailHtml(data: ApplicationPayload) {
       </div>
 
       <p style="font-size: 13px; color: #6B5560; text-align: center; margin-top: 20px;">
-        Questions? Feel free to reach out anytime via WhatsApp or email.
+        Questions? Reply to this email or reach us on WhatsApp anytime.
       </p>
     </div>
     <div class="footer">
       City Mela 2026 • Guwahati's Biggest Community Festival<br/>
-      Pass issued to ${escapeHtml(data.email || data.contact_name)}.
+      Pass issued to ${escapeHtml(data.email || data.contact_name)} • Ticket ID: ${escapeHtml(ticketId)}
     </div>
   </div>
 </body>
