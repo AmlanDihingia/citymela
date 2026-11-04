@@ -184,146 +184,209 @@ function renderCustomerEmailHtml(data: ApplicationPayload) {
   const isSchool = isSchoolType(data)
   const isActivity = isActivityType(data)
   const isVisitor = isVisitorType(data)
-  const { ticketId, verifyUrl, qrImageUrl } = getTicketDetails(data)
+  const { ticketId, qrImageUrl } = getTicketDetails(data)
 
   const helplineNumber = '919181051445'
   const waHelpLink = `https://wa.me/${helplineNumber}?text=${encodeURIComponent(
     `Hi City Mela Team, I have a question regarding my pass ${ticketId} for ${data.contact_name}.`
   )}`
 
-  const headerTitle = isFamily
-    ? 'Family Pass Registered! 🎟️'
+  const passBadge = isFamily
+    ? 'FAMILY ADMISSION PASS'
     : isSchool
-    ? 'School Registered! 🏫'
+    ? 'SCHOOL CHAMPIONSHIP PASS'
     : isActivity
-    ? 'Activity Confirmed! 🎨'
+    ? 'ACTIVITY PARTICIPANT PASS'
     : isVisitor
-    ? 'You’re on the VIP List! 🔔'
-    : 'Application Received! 🎉'
+    ? 'VIP FESTIVAL PASS'
+    : 'OFFICIAL STALL PASS'
+
+  const passCategory = data.stall_tier || data.category || 'General Admission'
 
   return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F8F5F0; margin: 0; padding: 24px; color: #2A1320; }
-    .card { background-color: #FFFFFF; border-radius: 12px; border: 1px solid #EADDD3; max-width: 600px; margin: 0 auto; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .header { background: linear-gradient(135deg, #B3122A 0%, #870D1F 100%); color: #FFFFFF; padding: 32px 24px; text-align: center; }
-    .header h1 { margin: 0 0 8px; font-size: 24px; font-weight: 800; }
-    .header p { margin: 0; opacity: 0.92; font-size: 15px; }
-    .content { padding: 28px 24px; }
-    .greeting { font-size: 16px; line-height: 1.6; color: #2A1320; margin-bottom: 20px; }
-    .summary-box { background-color: #FFFBF4; border: 1px solid #EADDD3; border-radius: 8px; padding: 18px; margin: 20px 0; }
-    .summary-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #B3122A; margin-bottom: 12px; }
-    .summary-item { font-size: 14px; margin-bottom: 6px; color: #4A3540; }
-    .summary-item strong { color: #2A1320; }
-    .steps-box { background-color: #F0FAF7; border: 1px solid #B8E4D8; border-radius: 8px; padding: 18px; margin: 20px 0; }
-    .steps-title { font-size: 14px; font-weight: 700; color: #159A92; margin-bottom: 8px; }
-    .steps-list { margin: 0; padding-left: 20px; font-size: 14px; color: #2A1320; line-height: 1.6; }
-    .actions { margin: 24px 0 12px; text-align: center; }
-    .btn { display: inline-block; background-color: #1F9D55; color: #FFFFFF !important; text-decoration: none; font-weight: 600; padding: 12px 28px; border-radius: 9999px; font-size: 15px; box-shadow: 0 2px 6px rgba(31,157,85,0.3); }
-    .footer { text-align: center; padding: 20px; font-size: 12px; color: #8C7882; background-color: #FFFBF4; border-top: 1px solid #EADDD3; line-height: 1.5; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  <title>Your Festival Pass — ${escapeHtml(ticketId)}</title>
 </head>
-<body>
-  <div class="card">
-    <div class="header">
-      <h1>${headerTitle}</h1>
-      <p>City Mela • Little Guwahati Festival & Pet Puja 2026</p>
-    </div>
-    <div class="content">
-      <div class="greeting">
-        Hi <strong>${escapeHtml(data.contact_name)}</strong>,<br/><br/>
-        ${
-          isFamily
-            ? 'Thank you for registering your Family Pass! Your digital entry pass is ready below.'
-            : isSchool
-            ? `Thank you for registering <strong>${escapeHtml(data.brand_name)}</strong> for the School Championship!`
-            : isActivity
-            ? `Thank you for signing up for <strong>${escapeHtml(data.category)}</strong>! Here is your entry pass.`
-            : isVisitor
-            ? `Thank you for signing up for deal alerts and lineup drops for <strong>${escapeHtml(data.category)}</strong>!`
-            : `Thank you for applying to showcase <strong>${escapeHtml(data.brand_name)}</strong> with us. We are thrilled by your interest!`
-        }
-      </div>
-
-      <!-- Digital QR Entry Pass — Full Self-Contained Card (no external links) -->
-      <div style="text-align: center; background: linear-gradient(160deg, #1A0F0C 0%, #2e1a16 100%); border-radius: 16px; padding: 28px 20px; margin: 24px 0; box-shadow: 0 6px 24px rgba(26,15,12,0.25);">
-        <!-- OFFICIAL PASS badge -->
-        <div style="margin-bottom: 14px;">
-          <span style="display: inline-block; font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #111111; background: #FFD400; padding: 5px 16px; border-radius: 999px;">
-            🎟️ Official Festival Pass
-          </span>
-        </div>
-
-        <!-- QR Code -->
-        <div style="display: inline-block; background: #FFFFFF; padding: 14px; border-radius: 12px; border: 3px solid #FFD400; margin-bottom: 16px;">
-          <img src="${qrImageUrl}" alt="Entry QR Code for ${escapeHtml(ticketId)}" width="200" height="200" style="display: block; border-radius: 4px;" />
-        </div>
-
-        <!-- Ticket ID -->
-        <div style="font-family: 'Courier New', Courier, monospace; font-size: 22px; font-weight: 900; letter-spacing: 3px; color: #FFD400; margin-bottom: 6px;">
-          ${escapeHtml(ticketId)}
-        </div>
-
-        <!-- Name & Pass type -->
-        <div style="font-size: 20px; font-weight: 800; color: #FFFFFF; margin-bottom: 2px;">
-          ${escapeHtml(data.contact_name)}
-        </div>
-        <div style="font-size: 14px; color: #d8a97d; font-weight: 600; margin-bottom: 20px;">
-          ${escapeHtml(data.stall_tier || data.category)}
-        </div>
-
-        <!-- Pass detail rows inside the dark card -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; text-align: left; background: rgba(255,255,255,0.07); border-radius: 10px; overflow: hidden; margin-bottom: 20px;">
-          ${data.hero_dishes ? `<tr>
-            <td style="padding: 9px 14px; font-size: 12px; color: #c9b8b2; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.08); width: 42%;">Inclusions</td>
-            <td style="padding: 9px 14px; font-size: 12px; color: #fff; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08);">${escapeHtml(data.hero_dishes)}</td>
-          </tr>` : ''}
-          ${data.location_area ? `<tr>
-            <td style="padding: 9px 14px; font-size: 12px; color: #c9b8b2; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.08);">School / City</td>
-            <td style="padding: 9px 14px; font-size: 12px; color: #fff; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08);">${escapeHtml(data.location_area)}</td>
-          </tr>` : ''}
+<body style="margin: 0; padding: 0; background-color: #0c0a09; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #f5f5f4;">
+  <!-- Email Wrapper -->
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #0c0a09; padding: 32px 12px;">
+    <tr>
+      <td align="center">
+        <!-- Main Card Container -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 580px; background-color: #171412; border: 1px solid #2e2824; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
+          
+          <!-- Gold Top Glow Bar -->
           <tr>
-            <td style="padding: 9px 14px; font-size: 12px; color: #c9b8b2; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.08);">WhatsApp</td>
-            <td style="padding: 9px 14px; font-size: 12px; color: #fff; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08);">+91 ${escapeHtml(data.whatsapp_number)}</td>
+            <td style="height: 4px; background: linear-gradient(90deg, #d97706, #FFD400, #f59e0b, #d97706); line-height: 4px; font-size: 0;">&nbsp;</td>
           </tr>
+
+          <!-- Festival Header -->
           <tr>
-            <td style="padding: 9px 14px; font-size: 12px; color: #c9b8b2; font-weight: 700;">Festival</td>
-            <td style="padding: 9px 14px; font-size: 12px; color: #fff; font-weight: 600;">14–15 Nov 2026 • Brahmaputra Riverfront</td>
+            <td style="padding: 32px 28px 20px; text-align: center;">
+              <div style="display: inline-block; padding: 4px 14px; border-radius: 999px; background-color: rgba(255, 212, 0, 0.12); border: 1px solid rgba(255, 212, 0, 0.35); font-size: 10px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; color: #FFD400; margin-bottom: 12px;">
+                LITTLE GUWAHATI FESTIVAL &bull; PET PUJA 2026
+              </div>
+              <h1 style="margin: 0; font-size: 26px; font-weight: 900; letter-spacing: -0.5px; color: #ffffff; line-height: 1.2;">
+                Your Official Digital Pass
+              </h1>
+              <p style="margin: 8px 0 0; font-size: 13px; color: #a8a29e; font-weight: 500;">
+                Confirmed &bull; Ready for Instant Gate Check-In
+              </p>
+            </td>
           </tr>
+
+          <!-- Ticket Stub (Luxury VIP Pass Card) -->
+          <tr>
+            <td style="padding: 0 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(180deg, #1f1a17 0%, #171311 100%); border: 1px solid #3d332c; border-radius: 20px; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);">
+                
+                <!-- Ticket Header Strip -->
+                <tr>
+                  <td style="padding: 16px 20px; background-color: #241e1a; border-bottom: 1px solid #362c26; text-align: center;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td align="left" style="font-size: 10px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #FFD400;">
+                          ${passBadge}
+                        </td>
+                        <td align="right" style="font-size: 11px; font-weight: 700; color: #22c55e;">
+                          &bull; VERIFIED ENTRY
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- QR Code & Attendee Hero -->
+                <tr>
+                  <td style="padding: 28px 24px 20px; text-align: center;">
+                    <!-- QR Frame -->
+                    <div style="display: inline-block; padding: 12px; background-color: #ffffff; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 3px solid #FFD400;">
+                      <img src="${qrImageUrl}" alt="Pass QR Code" width="190" height="190" style="display: block; border-radius: 6px;" />
+                    </div>
+
+                    <!-- Pass ID Display -->
+                    <div style="margin-top: 18px;">
+                      <span style="display: inline-block; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 22px; font-weight: 900; letter-spacing: 3px; color: #FFD400; background: rgba(255, 212, 0, 0.08); padding: 6px 18px; border-radius: 8px; border: 1px dashed rgba(255, 212, 0, 0.4);">
+                        ${escapeHtml(ticketId)}
+                      </span>
+                    </div>
+
+                    <!-- Attendee Name -->
+                    <div style="margin-top: 14px; font-size: 22px; font-weight: 800; color: #ffffff; letter-spacing: -0.3px;">
+                      ${escapeHtml(data.contact_name)}
+                    </div>
+                    <div style="margin-top: 4px; font-size: 13px; font-weight: 700; color: #f59e0b; text-transform: uppercase; letter-spacing: 1px;">
+                      ${escapeHtml(passCategory)}
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Perforation Line -->
+                <tr>
+                  <td style="padding: 0 16px;">
+                    <div style="border-top: 2px dashed #3a3029; height: 1px; line-height: 1px; font-size: 0;">&nbsp;</div>
+                  </td>
+                </tr>
+
+                <!-- Pass Details Grid -->
+                <tr>
+                  <td style="padding: 20px 24px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td width="50%" valign="top" style="padding-bottom: 14px;">
+                          <div style="font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #78716c;">DATES</div>
+                          <div style="font-size: 13px; font-weight: 700; color: #f5f5f4; margin-top: 3px;">14 &ndash; 15 Nov 2026</div>
+                          <div style="font-size: 11px; color: #a8a29e;">11:00 AM &ndash; 9:00 PM</div>
+                        </td>
+                        <td width="50%" valign="top" style="padding-bottom: 14px;">
+                          <div style="font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #78716c;">VENUE</div>
+                          <div style="font-size: 13px; font-weight: 700; color: #f5f5f4; margin-top: 3px;">Brahmaputra Riverfront</div>
+                          <div style="font-size: 11px; color: #a8a29e;">Guwahati, Assam</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="50%" valign="top" style="padding-bottom: 14px;">
+                          <div style="font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #78716c;">REGISTERED WHATSAPP</div>
+                          <div style="font-size: 13px; font-weight: 700; color: #f5f5f4; margin-top: 3px; font-family: monospace;">+91 ${escapeHtml(data.whatsapp_number)}</div>
+                        </td>
+                        <td width="50%" valign="top" style="padding-bottom: 14px;">
+                          <div style="font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #78716c;">${data.location_area ? 'SCHOOL / CITY' : 'ADMIT'}</div>
+                          <div style="font-size: 13px; font-weight: 700; color: #f5f5f4; margin-top: 3px;">${escapeHtml(data.location_area || '1 Pass (Full Access)')}</div>
+                        </td>
+                      </tr>
+                      ${data.hero_dishes ? `
+                      <tr>
+                        <td colspan="2" valign="top" style="padding-top: 4px;">
+                          <div style="font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #78716c;">PASS INCLUSIONS</div>
+                          <div style="font-size: 12px; font-weight: 600; color: #fef08a; margin-top: 4px; background: rgba(254, 240, 138, 0.08); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(254, 240, 138, 0.2);">
+                            ${escapeHtml(data.hero_dishes)}
+                          </div>
+                        </td>
+                      </tr>
+                      ` : ''}
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Fast Gate Scan Tip -->
+                <tr>
+                  <td style="padding: 14px 20px; background-color: rgba(255, 212, 0, 0.05); border-top: 1px solid #362c26; text-align: center;">
+                    <p style="margin: 0; font-size: 12px; color: #d6d3d1; line-height: 1.5;">
+                      📲 <strong style="color: #FFD400;">Entrance Gate Tip:</strong> Present this QR code on your phone screen to our gate volunteers for rapid verification. No paper printout required!
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Festival Highlights Strip -->
+          <tr>
+            <td style="padding: 24px 24px 8px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #12100e; border: 1px solid #29231f; border-radius: 14px; padding: 16px;">
+                <tr>
+                  <td style="font-size: 12px; color: #a8a29e; line-height: 1.6;">
+                    <strong style="color: #ffffff; font-size: 13px;">What to Expect at Little Guwahati Festival:</strong><br/>
+                    &bull; 🎪 50+ Curated Stalls &bull; 🐾 Pet Puja Blessings &amp; Adoption<br/>
+                    &bull; 🎨 Open Mic &amp; Art Contests &bull; 🍔 Guwahati Street Food Trail<br/>
+                    &bull; 🎁 Hourly Lucky Draws &amp; Family Games
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- WhatsApp Concierge Button -->
+          <tr>
+            <td style="padding: 16px 24px 24px; text-align: center;">
+              <a href="${waHelpLink}" target="_blank" style="display: inline-block; background-color: #1F9D55; color: #ffffff !important; text-decoration: none; font-size: 13px; font-weight: 800; padding: 12px 28px; border-radius: 999px; box-shadow: 0 4px 14px rgba(31, 157, 85, 0.35);">
+                💬 Need Help? Chat with Festival Team on WhatsApp
+              </a>
+              <p style="margin: 12px 0 0; font-size: 12px; color: #78716c;">
+                You can also reply directly to this email with any questions.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 20px 24px; background-color: #110e0d; border-top: 1px solid #241e1b; text-align: center;">
+              <p style="margin: 0; font-size: 11px; color: #78716c; line-height: 1.5;">
+                Little Guwahati Festival & Pet Puja 2026 &bull; Brahmaputra Riverfront, Guwahati<br/>
+                Pass issued to <strong style="color: #a8a29e;">${escapeHtml(data.email || data.contact_name)}</strong> &bull; Ticket ID: <strong style="color: #FFD400;">${escapeHtml(ticketId)}</strong>
+              </p>
+            </td>
+          </tr>
+
         </table>
-
-        <!-- Gate instruction -->
-        <p style="font-size: 13px; color: #c9b8b2; margin: 0; line-height: 1.6;">
-          📲 <strong style="color: #FFD400;">Show this email at the entrance gate</strong> for instant QR scan and check-in.<br/>
-          No printout needed — your phone screen is enough!
-        </p>
-      </div>
-
-      <div class="steps-box">
-        <div class="steps-title">How to Enter the Festival:</div>
-        <ol class="steps-list">
-          <li><strong>Keep this email open</strong> on your phone before reaching the gate.</li>
-          <li><strong>Gate staff will scan</strong> the QR code directly from your screen.</li>
-          <li><strong>Walk straight in</strong> and enjoy the shows, workshops, stalls &amp; lucky draws!</li>
-        </ol>
-      </div>
-
-      <div class="actions">
-        <a href="${waHelpLink}" class="btn" target="_blank">Chat with our team on WhatsApp</a>
-      </div>
-
-      <p style="font-size: 13px; color: #6B5560; text-align: center; margin-top: 20px;">
-        Questions? Reply to this email or reach us on WhatsApp anytime.
-      </p>
-    </div>
-    <div class="footer">
-      City Mela 2026 • Guwahati's Biggest Community Festival<br/>
-      Pass issued to ${escapeHtml(data.email || data.contact_name)} • Ticket ID: ${escapeHtml(ticketId)}
-    </div>
-  </div>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
   `
