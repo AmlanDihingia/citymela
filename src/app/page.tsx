@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import FestivalModal from '@/components/FestivalModal'
+import { X, Sparkles, AlertCircle, Loader2 } from 'lucide-react'
 
 type FestivalId = 'lgf' | 'dd' | 'bwc'
 
@@ -45,6 +46,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<FestivalId>('lgf')
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'vendor' | 'alert'>('vendor')
+  const [popupModal, setPopupModal] = useState<'none' | 'kids' | 'family' | 'school' | 'stall'>('none')
 
   // Pass calculator state
   const [passSel, setPassSel] = useState<Record<string, boolean>>({
@@ -130,6 +132,25 @@ export default function Home() {
     }
   }, [])
 
+  // Lock scroll and handle escape key when modal is open
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setPopupModal('none')
+      }
+    }
+    if (popupModal !== 'none') {
+      window.addEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = ''
+    }
+  }, [popupModal])
+
   const handleTabClick = (id: FestivalId) => {
     setActiveTab(id)
     if (typeof window !== 'undefined' && window.history.pushState) {
@@ -194,10 +215,9 @@ export default function Home() {
   const handleSelectActivity = (activityTitle: string, priceText: string) => {
     const matchingOption = `${activityTitle} (${priceText.toLowerCase()})`
     setKidsForm((prev) => ({ ...prev, activity: matchingOption }))
-    const formEl = document.getElementById('kids-form')
-    if (formEl) {
-      formEl.scrollIntoView({ behavior: 'smooth' })
-    }
+    setKidsError('')
+    setKidsSuccess('')
+    setPopupModal('kids')
   }
 
   // Activity registration submission
@@ -209,7 +229,8 @@ export default function Home() {
     const phoneDigits = kidsForm.phone.replace(/\D/g, '').slice(-10)
     if (!kidsForm.name.trim()) return setKidsError('Please enter the participant’s name.')
     if (!kidsForm.parent.trim()) return setKidsError('Please enter the parent or guardian’s name.')
-    if (kidsForm.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(kidsForm.email.trim())) {
+    if (!kidsForm.email.trim()) return setKidsError('Email address is mandatory for registration confirmation.')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(kidsForm.email.trim())) {
       return setKidsError('Please enter a valid email address.')
     }
     if (phoneDigits.length < 10) return setKidsError('Please enter a valid 10-digit WhatsApp number.')
@@ -230,23 +251,16 @@ export default function Home() {
           hero_dishes: `Participant: ${kidsForm.name.trim()}, Age: ${kidsForm.age || 'N/A'}, School: ${kidsForm.school || 'N/A'}`,
           stall_tier: kidsForm.activity,
           location_area: kidsForm.school || 'Guwahati',
-          additional_notes: `Consent: Yes, Activity: ${kidsForm.activity}${kidsForm.email ? `, Email: ${kidsForm.email.trim()}` : ''}`,
+          additional_notes: `Consent: Yes, Activity: ${kidsForm.activity}, Email: ${kidsForm.email.trim()}`,
           source: 'lgf-activity-signup',
         }),
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        setKidsSuccess('Registration received! We have noted your slot and will WhatsApp and email you with confirmation details.')
-        setKidsForm({
-          activity: "Kids’ Open Mic (₹199 + GST)",
-          name: '',
-          age: '',
-          school: '',
-          parent: '',
-          email: '',
-          phone: '',
-          consent: false,
-        })
+        const ticketId = data.ticket_id || 'CONFIRMED'
+        setKidsSuccess('Registration confirmed! Redirecting to your official pass...')
+        window.location.href = `/pass/${encodeURIComponent(ticketId)}`
+        return
       } else {
         setKidsError(data.error || 'Failed to submit registration. Please try again.')
       }
@@ -265,6 +279,10 @@ export default function Home() {
 
     const phoneDigits = familyForm.phone.replace(/\D/g, '').slice(-10)
     if (!familyForm.name.trim()) return setFamilyError('Please enter your full name.')
+    if (!familyForm.email.trim()) return setFamilyError('Email address is mandatory to receive your digital entry pass.')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(familyForm.email.trim())) {
+      return setFamilyError('Please enter a valid email address.')
+    }
     if (phoneDigits.length < 10) return setFamilyError('Please enter a valid 10-digit WhatsApp number.')
 
     setFamilySubmitting(true)
@@ -282,7 +300,7 @@ export default function Home() {
           hero_dishes: passLines.map((l) => `${l.label} (${l.amount})`).join(', ') || 'Free Family Pass',
           stall_tier: totalText,
           location_area: familyForm.school || 'Guwahati',
-          additional_notes: `Email: ${familyForm.email}, School: ${familyForm.school || 'N/A'}, Total: ${totalText}`,
+          additional_notes: `Email: ${familyForm.email.trim()}, School: ${familyForm.school || 'N/A'}, Total: ${totalText}`,
           source: 'lgf-family-pass',
         }),
       })
@@ -290,8 +308,9 @@ export default function Home() {
       if (res.ok && data.success) {
         const ticketId = data.ticket_id || 'CONFIRMED'
         setFamilyPassId(ticketId)
-        setFamilySuccess(`Family pass registered! Your Pass ID is ${ticketId}. Details and QR pass have been sent to your WhatsApp & Email.`)
-        setFamilyForm({ name: '', email: '', phone: '', school: '' })
+        setFamilySuccess(`Family pass registered! Redirecting to your digital pass...`)
+        window.location.href = `/pass/${encodeURIComponent(ticketId)}`
+        return
       } else {
         setFamilyError(data.error || 'Failed to register family pass. Please try again.')
       }
@@ -311,6 +330,10 @@ export default function Home() {
     const phoneDigits = schoolForm.phone.replace(/\D/g, '').slice(-10)
     if (!schoolForm.name.trim()) return setSchoolError('Please enter your school name.')
     if (!schoolForm.contact.trim()) return setSchoolError('Please enter your contact name.')
+    if (!schoolForm.email.trim()) return setSchoolError('Email address is mandatory for championship registration.')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(schoolForm.email.trim())) {
+      return setSchoolError('Please enter a valid email address.')
+    }
     if (phoneDigits.length < 10) return setSchoolError('Please enter a valid 10-digit phone/WhatsApp number.')
 
     setSchoolSubmitting(true)
@@ -328,22 +351,16 @@ export default function Home() {
           hero_dishes: `Role: ${schoolForm.role}, Championships: ${schoolForm.msg || 'All standard'}`,
           stall_tier: schoolForm.type,
           location_area: schoolForm.name.trim(),
-          additional_notes: `Email: ${schoolForm.email}, Role: ${schoolForm.role}, Message: ${schoolForm.msg}`,
+          additional_notes: `Email: ${schoolForm.email.trim()}, Role: ${schoolForm.role}, Message: ${schoolForm.msg}`,
           source: 'lgf-school-registration',
         }),
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        setSchoolSuccess('School registered! Our team will confirm your place and championship details within one working day.')
-        setSchoolForm({
-          name: '',
-          type: 'Invited · Free · 3 of 6 championships',
-          contact: '',
-          role: '',
-          phone: '',
-          email: '',
-          msg: '',
-        })
+        const ticketId = data.ticket_id || 'CONFIRMED'
+        setSchoolSuccess('School registered! Redirecting to your confirmed booking pass...')
+        window.location.href = `/pass/${encodeURIComponent(ticketId)}`
+        return
       } else {
         setSchoolError(data.error || 'Failed to submit school registration.')
       }
@@ -363,6 +380,10 @@ export default function Home() {
     const phoneDigits = stallForm.phone.replace(/\D/g, '').slice(-10)
     if (!stallForm.biz.trim()) return setStallError('Please enter your brand or business name.')
     if (!stallForm.name.trim()) return setStallError('Please enter your contact name.')
+    if (!stallForm.email.trim()) return setStallError('Email address is mandatory for stall booking invoice & confirmation.')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(stallForm.email.trim())) {
+      return setStallError('Please enter a valid email address.')
+    }
     if (phoneDigits.length < 10) return setStallError('Please enter a valid 10-digit WhatsApp number.')
 
     setStallSubmitting(true)
@@ -380,21 +401,16 @@ export default function Home() {
           hero_dishes: `Selling: ${stallForm.sell || 'General items'}`,
           stall_tier: stallForm.type,
           location_area: 'Guwahati',
-          additional_notes: `Email: ${stallForm.email}, Offering: ${stallForm.sell}`,
+          additional_notes: `Email: ${stallForm.email.trim()}, Offering: ${stallForm.sell}`,
           source: 'lgf-stall-booking',
         }),
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        setStallSuccess('Booking request sent! We will call you to confirm your stall location and invoice.')
-        setStallForm({
-          biz: '',
-          type: 'Food stall · 10×10 ft · ₹12,000 + GST',
-          name: '',
-          phone: '',
-          email: '',
-          sell: '',
-        })
+        const ticketId = data.ticket_id || 'CONFIRMED'
+        setStallSuccess('Booking request sent! Redirecting to confirmation pass...')
+        window.location.href = `/pass/${encodeURIComponent(ticketId)}`
+        return
       } else {
         setStallError(data.error || 'Failed to submit stall booking.')
       }
@@ -445,16 +461,16 @@ export default function Home() {
               <a href="#lgf-top" style={{ fontFamily: "'Bagel Fat One', Arial, sans-serif", fontSize: 'clamp(20px, 5vw, 26px)', color: '#FFC93C', textDecoration: 'none', whiteSpace: 'nowrap' }}>
                 Little Guwahati Festival
               </a>
-              <div className="scroll-nav" style={{ gap: 14, fontWeight: 800, fontSize: 15, maxWidth: '100%', paddingBottom: 2 }}>
-                <a href="#kids" style={{ color: '#FFF7EE', textDecoration: 'none', whiteSpace: 'nowrap' }}>Sign up</a>
-                <a href="#schools" style={{ color: '#FFF7EE', textDecoration: 'none', whiteSpace: 'nowrap' }}>Coolest School</a>
+              <div className="scroll-nav" style={{ gap: 14, fontWeight: 800, fontSize: 15, maxWidth: '100%', paddingBottom: 2, alignItems: 'center' }}>
+                <button type="button" onClick={() => setPopupModal('kids')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', color: '#FFF7EE', fontWeight: 800, fontSize: 15, padding: 0, whiteSpace: 'nowrap' }}>Sign up</button>
+                <button type="button" onClick={() => setPopupModal('school')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', color: '#FFF7EE', fontWeight: 800, fontSize: 15, padding: 0, whiteSpace: 'nowrap' }}>Coolest School</button>
                 <a href="#whatson" style={{ color: '#FFF7EE', textDecoration: 'none', whiteSpace: 'nowrap' }}>What’s on</a>
-                <a href="#stalls" style={{ color: '#FFF7EE', textDecoration: 'none', whiteSpace: 'nowrap' }}>Book a stall</a>
+                <button type="button" onClick={() => setPopupModal('stall')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', color: '#FFF7EE', fontWeight: 800, fontSize: 15, padding: 0, whiteSpace: 'nowrap' }}>Book a stall</button>
                 <a href="#partners" style={{ color: '#FFF7EE', textDecoration: 'none', whiteSpace: 'nowrap' }}>Partners</a>
                 <a href="#schools" style={{ color: '#FFF7EE', textDecoration: 'none', whiteSpace: 'nowrap' }}>School rules</a>
-                <a href="#family" style={{ background: '#FFC93C', color: '#1A0F0C', textDecoration: 'none', padding: '10px 18px', borderRadius: 999, minHeight: 40, boxSizing: 'border-box', display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+                <button type="button" onClick={() => setPopupModal('family')} style={{ background: '#FFC93C', color: '#1A0F0C', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 800, padding: '10px 18px', borderRadius: 999, minHeight: 40, boxSizing: 'border-box', display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
                   Family pass
-                </a>
+                </button>
               </div>
             </nav>
           </header>
@@ -473,15 +489,15 @@ export default function Home() {
                   Two days of shows, music, play, free health check-ups and the Coolest School Championship, on the Brahmaputra riverfront. 14–15 November 2026.
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-                  <a href="#kids" style={{ background: '#FFC93C', color: '#1A0F0C', textDecoration: 'none', fontWeight: 900, fontSize: 'clamp(15px, 2.8vw, 18px)', padding: '14px 24px', borderRadius: 999, boxShadow: '0 6px 0 #1A0F0C', minHeight: 48, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxSizing: 'border-box' }}>
+                  <button type="button" onClick={() => setPopupModal('kids')} style={{ background: '#FFC93C', color: '#1A0F0C', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 900, fontSize: 'clamp(15px, 2.8vw, 18px)', padding: '14px 24px', borderRadius: 999, boxShadow: '0 6px 0 #1A0F0C', minHeight: 48, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxSizing: 'border-box' }}>
                     Sign up for an activity
-                  </a>
-                  <a href="#family" style={{ background: '#FFF7EE', color: '#7A1F2B', textDecoration: 'none', fontWeight: 900, fontSize: 'clamp(15px, 2.8vw, 18px)', padding: '14px 24px', borderRadius: 999, boxShadow: '0 6px 0 #1A0F0C', minHeight: 48, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxSizing: 'border-box' }}>
+                  </button>
+                  <button type="button" onClick={() => setPopupModal('family')} style={{ background: '#FFF7EE', color: '#7A1F2B', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 900, fontSize: 'clamp(15px, 2.8vw, 18px)', padding: '14px 24px', borderRadius: 999, boxShadow: '0 6px 0 #1A0F0C', minHeight: 48, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxSizing: 'border-box' }}>
                     Get your family pass
-                  </a>
-                  <a href="#stalls" style={{ background: '#1A0F0C', color: '#FFC93C', textDecoration: 'none', fontWeight: 900, fontSize: 'clamp(15px, 2.8vw, 18px)', padding: '14px 24px', borderRadius: 999, boxShadow: '0 6px 0 #FFC93C', minHeight: 48, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxSizing: 'border-box' }}>
+                  </button>
+                  <button type="button" onClick={() => setPopupModal('stall')} style={{ background: '#1A0F0C', color: '#FFC93C', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 900, fontSize: 'clamp(15px, 2.8vw, 18px)', padding: '14px 24px', borderRadius: 999, boxShadow: '0 6px 0 #FFC93C', minHeight: 48, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxSizing: 'border-box' }}>
                     Book your stall
-                  </a>
+                  </button>
                 </div>
               </div>
 
@@ -758,7 +774,7 @@ export default function Home() {
                   </label>
 
                   <label htmlFor="k-email" style={{ display: 'flex', flexDirection: 'column', gap: 6, fontWeight: 800, fontSize: 14 }}>
-                    Email (optional — for confirmation)
+                    Email address *
                     <input
                       id="k-email"
                       type="email"
@@ -766,6 +782,7 @@ export default function Home() {
                       value={kidsForm.email}
                       onChange={(e) => setKidsForm({ ...kidsForm, email: e.target.value })}
                       style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 16, padding: '12px 14px', border: '2px solid #1A0F0C', borderRadius: 12, background: '#FFFFFF', color: '#1A0F0C', minHeight: 48 }}
+                      required
                     />
                   </label>
 
@@ -991,7 +1008,7 @@ export default function Home() {
                       />
                     </label>
                     <label htmlFor="f-email" style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 14 }}>
-                      Email (optional — for pass confirmation)
+                      Email address *
                       <input
                         id="f-email"
                         type="email"
@@ -999,6 +1016,7 @@ export default function Home() {
                         value={familyForm.email}
                         onChange={(e) => setFamilyForm({ ...familyForm, email: e.target.value })}
                         style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 16, padding: '12px 14px', border: '2px solid #1A0F0C', borderRadius: 12, background: '#FFFFFF', color: '#1A0F0C', minHeight: 48 }}
+                        required
                       />
                     </label>
                     <label htmlFor="f-phone" style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 14 }}>
@@ -1242,7 +1260,7 @@ export default function Home() {
                   </label>
 
                   <label htmlFor="s-email" style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 14 }}>
-                    Email (optional — for championship details)
+                    Email address *
                     <input
                       id="s-email"
                       type="email"
@@ -1250,6 +1268,7 @@ export default function Home() {
                       value={schoolForm.email}
                       onChange={(e) => setSchoolForm({ ...schoolForm, email: e.target.value })}
                       style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 16, padding: '12px 14px', border: '2px solid #1A0F0C', borderRadius: 12, background: '#FFFFFF', color: '#1A0F0C', minHeight: 48 }}
+                      required
                     />
                   </label>
 
@@ -1444,9 +1463,9 @@ export default function Home() {
                     <li>Power point and lights</li>
                     <li>Listed on the festival map</li>
                   </ul>
-                  <a href="#stall-form" style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, textDecoration: 'none', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
+                  <button type="button" onClick={() => { setStallForm(prev => ({ ...prev, type: 'Food stall · 10×10 ft · ₹12,000 + GST' })); setPopupModal('stall'); }} style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'pointer', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
                     Book this stall
-                  </a>
+                  </button>
                 </div>
                 <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <p style={{ margin: 0, fontWeight: 900, letterSpacing: 2, fontSize: 12, color: '#7A1F2B' }}>FOOD STALL · COMPACT</p>
@@ -1457,9 +1476,9 @@ export default function Home() {
                     <li>Power point and lights</li>
                     <li>Listed on the festival map</li>
                   </ul>
-                  <a href="#stall-form" style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, textDecoration: 'none', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
+                  <button type="button" onClick={() => { setStallForm(prev => ({ ...prev, type: 'Food stall · 5×10 ft · ₹5,000 + GST' })); setPopupModal('stall'); }} style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'pointer', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
                     Book this stall
-                  </a>
+                  </button>
                 </div>
               </div>
 
@@ -1474,9 +1493,9 @@ export default function Home() {
                     <li>Power point and lights</li>
                     <li>Listed on the festival map</li>
                   </ul>
-                  <a href="#stall-form" style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, textDecoration: 'none', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
+                  <button type="button" onClick={() => { setStallForm(prev => ({ ...prev, type: 'Shopping stall · 5×10 ft shared · ₹7,000 + GST' })); setPopupModal('stall'); }} style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'pointer', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
                     Book this stall
-                  </a>
+                  </button>
                 </div>
                 <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <p style={{ margin: 0, fontWeight: 900, letterSpacing: 2, fontSize: 12, color: '#7A1F2B' }}>SHOPPING STALL</p>
@@ -1487,9 +1506,9 @@ export default function Home() {
                     <li>Power point and lights</li>
                     <li>Listed on the festival map</li>
                   </ul>
-                  <a href="#stall-form" style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, textDecoration: 'none', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
+                  <button type="button" onClick={() => { setStallForm(prev => ({ ...prev, type: 'Shopping stall · 10×10 ft · ₹15,000 + GST' })); setPopupModal('stall'); }} style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'pointer', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
                     Book this stall
-                  </a>
+                  </button>
                 </div>
                 <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <p style={{ margin: 0, fontWeight: 900, letterSpacing: 2, fontSize: 12, color: '#7A1F2B' }}>SHOPPING · LARGE</p>
@@ -1500,9 +1519,9 @@ export default function Home() {
                     <li>Power point and lights</li>
                     <li>Featured on the festival map</li>
                   </ul>
-                  <a href="#stall-form" style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, textDecoration: 'none', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
+                  <button type="button" onClick={() => { setStallForm(prev => ({ ...prev, type: 'Shopping stall · 20×10 ft · ₹30,000 + GST' })); setPopupModal('stall'); }} style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'pointer', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
                     Book this stall
-                  </a>
+                  </button>
                 </div>
               </div>
 
@@ -1585,7 +1604,7 @@ export default function Home() {
                   </label>
 
                   <label htmlFor="st-email" style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 14 }}>
-                    Email (optional — for invoice & confirmation)
+                    Email address *
                     <input
                       id="st-email"
                       type="email"
@@ -1593,6 +1612,7 @@ export default function Home() {
                       value={stallForm.email}
                       onChange={(e) => setStallForm({ ...stallForm, email: e.target.value })}
                       style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 16, padding: '12px 14px', border: '2px solid #1A0F0C', borderRadius: 12, background: '#FFFFFF', color: '#1A0F0C', minHeight: 48 }}
+                      required
                     />
                   </label>
 
@@ -1918,6 +1938,605 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Pop Up Form Modal for Little Guwahati Festival */}
+      {popupModal !== 'none' && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setPopupModal('none')}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 100,
+            background: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(6px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px',
+            overflowY: 'auto',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#FFF7EE',
+              color: '#1A0F0C',
+              borderRadius: 24,
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 2px #7A1F2B',
+              width: '100%',
+              maxWidth: 560,
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+            }}
+          >
+            {/* Header */}
+            <div
+              style={{
+                background: '#7A1F2B',
+                color: '#FFF7EE',
+                padding: '20px 24px',
+                borderTopLeftRadius: 22,
+                borderTopRightRadius: 22,
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'space-between',
+                gap: 12,
+              }}
+            >
+              <div>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    background: '#FFC93C',
+                    color: '#1A0F0C',
+                    fontSize: 11,
+                    fontWeight: 900,
+                    letterSpacing: '0.08em',
+                    padding: '3px 10px',
+                    borderRadius: 999,
+                    textTransform: 'uppercase',
+                    marginBottom: 6,
+                  }}
+                >
+                  <Sparkles size={12} />
+                  LITTLE GUWAHATI FESTIVAL 2026
+                </span>
+                <h2
+                  style={{
+                    margin: 0,
+                    fontFamily: "'Bagel Fat One', Arial, sans-serif",
+                    fontSize: 'clamp(22px, 4vw, 26px)',
+                    color: '#FFC93C',
+                    lineHeight: 1.15,
+                  }}
+                >
+                  {popupModal === 'kids' && 'Activity Registration'}
+                  {popupModal === 'family' && 'Get Your Family Pass'}
+                  {popupModal === 'school' && 'School Championship Registration'}
+                  {popupModal === 'stall' && 'Book a Festival Stall'}
+                </h2>
+                <p style={{ margin: '4px 0 0', fontSize: 13, color: '#F5DCC8', lineHeight: 1.4 }}>
+                  {popupModal === 'kids' && 'Fill participant & parent details. Mandatory email is required for instant pass delivery.'}
+                  {popupModal === 'family' && 'Official digital pass with QR ticket code will be generated and emailed instantly.'}
+                  {popupModal === 'school' && 'Confirm your school participation. Digital certificate & entry pass provided.'}
+                  {popupModal === 'stall' && 'Reserve your festival stall. Confirmation pass and invoice details sent upon submit.'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPopupModal('none')}
+                aria-label="Close modal"
+                style={{
+                  background: 'rgba(255,255,255,0.15)',
+                  border: 'none',
+                  color: '#FFF7EE',
+                  width: 36,
+                  height: 36,
+                  borderRadius: 999,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  flexShrink: 0,
+                }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: '20px 24px' }}>
+              {/* KIDS MODAL FORM */}
+              {popupModal === 'kids' && (
+                <form onSubmit={handleKidsSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {kidsError && (
+                    <div style={{ background: '#FF6B2C', color: '#FFF7EE', padding: '10px 14px', borderRadius: 12, fontWeight: 800, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <AlertCircle size={18} />
+                      <span>{kidsError}</span>
+                    </div>
+                  )}
+                  {kidsSuccess && (
+                    <div style={{ background: '#FFC93C', color: '#1A0F0C', padding: '10px 14px', borderRadius: 12, fontWeight: 800, fontSize: 13 }}>
+                      ✓ {kidsSuccess}
+                    </div>
+                  )}
+
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                    Activity *
+                    <select
+                      value={kidsForm.activity}
+                      onChange={(e) => setKidsForm({ ...kidsForm, activity: e.target.value })}
+                      style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                    >
+                      <option>Kids’ Open Mic (₹199 + GST)</option>
+                      <option>Art Competition (free)</option>
+                      <option>Art Workshop (₹299 + GST)</option>
+                      <option>AI &amp; Robotics Workshop (₹299 + GST)</option>
+                      <option>Try a Music Instrument (free)</option>
+                      <option>Crawl Race &amp; Toddler Dash (free)</option>
+                    </select>
+                  </label>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                      Participant Name *
+                      <input
+                        type="text"
+                        placeholder="Child's full name"
+                        value={kidsForm.name}
+                        onChange={(e) => setKidsForm({ ...kidsForm, name: e.target.value })}
+                        style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                        required
+                      />
+                    </label>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                      Age in years
+                      <input
+                        type="number"
+                        placeholder="e.g. 8"
+                        value={kidsForm.age}
+                        onChange={(e) => setKidsForm({ ...kidsForm, age: e.target.value })}
+                        style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                      />
+                    </label>
+                  </div>
+
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                    School (optional)
+                    <input
+                      type="text"
+                      placeholder="School name"
+                      value={kidsForm.school}
+                      onChange={(e) => setKidsForm({ ...kidsForm, school: e.target.value })}
+                      style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                    />
+                  </label>
+
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                    Parent or Guardian Name *
+                    <input
+                      type="text"
+                      placeholder="Parent's full name"
+                      value={kidsForm.parent}
+                      onChange={(e) => setKidsForm({ ...kidsForm, parent: e.target.value })}
+                      style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                      required
+                    />
+                  </label>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                      Email Address * <span style={{ color: '#7A1F2B', fontSize: 11 }}>(Mandatory)</span>
+                      <input
+                        type="email"
+                        placeholder="parent@example.com"
+                        value={kidsForm.email}
+                        onChange={(e) => setKidsForm({ ...kidsForm, email: e.target.value })}
+                        style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                        required
+                      />
+                    </label>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                      WhatsApp Number *
+                      <input
+                        type="tel"
+                        placeholder="+91"
+                        value={kidsForm.phone}
+                        onChange={(e) => setKidsForm({ ...kidsForm, phone: e.target.value })}
+                        style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                        required
+                      />
+                    </label>
+                  </div>
+
+                  <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 13, cursor: 'pointer', marginTop: 4 }}>
+                    <input
+                      type="checkbox"
+                      checked={kidsForm.consent}
+                      onChange={(e) => setKidsForm({ ...kidsForm, consent: e.target.checked })}
+                      style={{ width: 18, height: 18, accentColor: '#7A1F2B', marginTop: 2 }}
+                      required
+                    />
+                    <span>I confirm I am the parent/guardian and consent to the participant taking part in this activity.</span>
+                  </label>
+
+                  <button
+                    type="submit"
+                    disabled={kidsSubmitting}
+                    style={{
+                      marginTop: 8,
+                      background: '#7A1F2B',
+                      color: '#FFF7EE',
+                      fontSize: 16,
+                      fontWeight: 900,
+                      padding: '13px 24px',
+                      borderRadius: 999,
+                      border: 'none',
+                      cursor: kidsSubmitting ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      boxShadow: '0 4px 0 #1A0F0C',
+                    }}
+                  >
+                    {kidsSubmitting ? (
+                      <>
+                        <Loader2 className="animate-spin" size={18} />
+                        <span>Registering &amp; Generating Pass...</span>
+                      </>
+                    ) : (
+                      <span>Complete Registration &amp; Get Pass →</span>
+                    )}
+                  </button>
+                </form>
+              )}
+
+              {/* FAMILY MODAL FORM */}
+              {popupModal === 'family' && (
+                <form onSubmit={handleFamilySubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {familyError && (
+                    <div style={{ background: '#FF6B2C', color: '#FFF7EE', padding: '10px 14px', borderRadius: 12, fontWeight: 800, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <AlertCircle size={18} />
+                      <span>{familyError}</span>
+                    </div>
+                  )}
+
+                  <div style={{ background: '#FFF1E0', border: '1.5px solid #EADDD3', borderRadius: 12, padding: '12px 14px' }}>
+                    <div style={{ fontSize: 12, fontWeight: 900, color: '#7A1F2B', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>
+                      Pass Package Selected
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 15, fontWeight: 800 }}>
+                      <span>{passLines.length > 0 ? `${passLines.length} item(s) configured` : 'Official Family Pass (All Days)'}</span>
+                      <span style={{ color: '#7A1F2B', fontSize: 18 }}>{totalText}</span>
+                    </div>
+                  </div>
+
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                    Full Name *
+                    <input
+                      type="text"
+                      placeholder="Your full name"
+                      value={familyForm.name}
+                      onChange={(e) => setFamilyForm({ ...familyForm, name: e.target.value })}
+                      style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                      required
+                    />
+                  </label>
+
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                    Email Address * <span style={{ color: '#7A1F2B', fontSize: 11 }}>(Mandatory — digital QR pass is sent here)</span>
+                    <input
+                      type="email"
+                      placeholder="you@example.com"
+                      value={familyForm.email}
+                      onChange={(e) => setFamilyForm({ ...familyForm, email: e.target.value })}
+                      style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                      required
+                    />
+                  </label>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                      WhatsApp Number *
+                      <input
+                        type="tel"
+                        placeholder="+91"
+                        value={familyForm.phone}
+                        onChange={(e) => setFamilyForm({ ...familyForm, phone: e.target.value })}
+                        style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                        required
+                      />
+                    </label>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                      Child’s School (optional)
+                      <input
+                        type="text"
+                        placeholder="School name"
+                        value={familyForm.school}
+                        onChange={(e) => setFamilyForm({ ...familyForm, school: e.target.value })}
+                        style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                      />
+                    </label>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={familySubmitting}
+                    style={{
+                      marginTop: 8,
+                      background: '#7A1F2B',
+                      color: '#FFF7EE',
+                      fontSize: 16,
+                      fontWeight: 900,
+                      padding: '13px 24px',
+                      borderRadius: 999,
+                      border: 'none',
+                      cursor: familySubmitting ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      boxShadow: '0 4px 0 #1A0F0C',
+                    }}
+                  >
+                    {familySubmitting ? (
+                      <>
+                        <Loader2 className="animate-spin" size={18} />
+                        <span>Confirming &amp; Generating Pass...</span>
+                      </>
+                    ) : (
+                      <span>{passCtaText} →</span>
+                    )}
+                  </button>
+                </form>
+              )}
+
+              {/* SCHOOL MODAL FORM */}
+              {popupModal === 'school' && (
+                <form onSubmit={handleSchoolSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {schoolError && (
+                    <div style={{ background: '#FF6B2C', color: '#FFF7EE', padding: '10px 14px', borderRadius: 12, fontWeight: 800, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <AlertCircle size={18} />
+                      <span>{schoolError}</span>
+                    </div>
+                  )}
+
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                    School Name *
+                    <input
+                      type="text"
+                      placeholder="School name"
+                      value={schoolForm.name}
+                      onChange={(e) => setSchoolForm({ ...schoolForm, name: e.target.value })}
+                      style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                      required
+                    />
+                  </label>
+
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                    Championship Package *
+                    <select
+                      value={schoolForm.type}
+                      onChange={(e) => setSchoolForm({ ...schoolForm, type: e.target.value })}
+                      style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                    >
+                      <option>Invited · Free · 3 of 6 championships</option>
+                      <option>Participant · ₹20,000 + GST · 3 championships, Pavilion table and own 10×10 stall</option>
+                      <option>Champion · ₹40,000 + GST · all 6 championships, own 10×10 stall, creator reel (most popular)</option>
+                      <option>Spotlight · ₹60,000 + GST · plus 10-min showcase, prime stall, press meet panel (5 places)</option>
+                      <option>Signature · ₹1,00,000 + GST · plus 15-min showcase, 20×20 Experience Zone, main-stage talk (1 place)</option>
+                    </select>
+                  </label>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                      Contact Person Name *
+                      <input
+                        type="text"
+                        placeholder="Principal / In-charge name"
+                        value={schoolForm.contact}
+                        onChange={(e) => setSchoolForm({ ...schoolForm, contact: e.target.value })}
+                        style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                        required
+                      />
+                    </label>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                      Role / Designation
+                      <input
+                        type="text"
+                        placeholder="Principal, Teacher, Admin..."
+                        value={schoolForm.role}
+                        onChange={(e) => setSchoolForm({ ...schoolForm, role: e.target.value })}
+                        style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                      />
+                    </label>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                      Email Address * <span style={{ color: '#7A1F2B', fontSize: 11 }}>(Mandatory)</span>
+                      <input
+                        type="email"
+                        placeholder="school@example.com"
+                        value={schoolForm.email}
+                        onChange={(e) => setSchoolForm({ ...schoolForm, email: e.target.value })}
+                        style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                        required
+                      />
+                    </label>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                      Phone / WhatsApp *
+                      <input
+                        type="tel"
+                        placeholder="+91"
+                        value={schoolForm.phone}
+                        onChange={(e) => setSchoolForm({ ...schoolForm, phone: e.target.value })}
+                        style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                        required
+                      />
+                    </label>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={schoolSubmitting}
+                    style={{
+                      marginTop: 8,
+                      background: '#7A1F2B',
+                      color: '#FFF7EE',
+                      fontSize: 16,
+                      fontWeight: 900,
+                      padding: '13px 24px',
+                      borderRadius: 999,
+                      border: 'none',
+                      cursor: schoolSubmitting ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      boxShadow: '0 4px 0 #1A0F0C',
+                    }}
+                  >
+                    {schoolSubmitting ? (
+                      <>
+                        <Loader2 className="animate-spin" size={18} />
+                        <span>Registering School &amp; Generating Pass...</span>
+                      </>
+                    ) : (
+                      <span>Register School &amp; Get Pass →</span>
+                    )}
+                  </button>
+                </form>
+              )}
+
+              {/* STALL MODAL FORM */}
+              {popupModal === 'stall' && (
+                <form onSubmit={handleStallSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {stallError && (
+                    <div style={{ background: '#FF6B2C', color: '#FFF7EE', padding: '10px 14px', borderRadius: 12, fontWeight: 800, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <AlertCircle size={18} />
+                      <span>{stallError}</span>
+                    </div>
+                  )}
+
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                    Business / Brand Name *
+                    <input
+                      type="text"
+                      placeholder="Your brand or shop name"
+                      value={stallForm.biz}
+                      onChange={(e) => setStallForm({ ...stallForm, biz: e.target.value })}
+                      style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                      required
+                    />
+                  </label>
+
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                    Stall Type *
+                    <select
+                      value={stallForm.type}
+                      onChange={(e) => setStallForm({ ...stallForm, type: e.target.value })}
+                      style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                    >
+                      <option>Food stall · 10×10 ft · ₹12,000 + GST</option>
+                      <option>Food stall · 5×10 ft · ₹5,000 + GST</option>
+                      <option>Shopping stall · 5×10 ft shared · ₹7,000 + GST</option>
+                      <option>Shopping stall · 10×10 ft · ₹15,000 + GST</option>
+                      <option>Shopping stall · 20×10 ft · ₹30,000 + GST</option>
+                    </select>
+                  </label>
+
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                    Contact Person Name *
+                    <input
+                      type="text"
+                      placeholder="Full name"
+                      value={stallForm.name}
+                      onChange={(e) => setStallForm({ ...stallForm, name: e.target.value })}
+                      style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                      required
+                    />
+                  </label>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                      Email Address * <span style={{ color: '#7A1F2B', fontSize: 11 }}>(Mandatory)</span>
+                      <input
+                        type="email"
+                        placeholder="you@example.com"
+                        value={stallForm.email}
+                        onChange={(e) => setStallForm({ ...stallForm, email: e.target.value })}
+                        style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                        required
+                      />
+                    </label>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                      Phone / WhatsApp *
+                      <input
+                        type="tel"
+                        placeholder="+91"
+                        value={stallForm.phone}
+                        onChange={(e) => setStallForm({ ...stallForm, phone: e.target.value })}
+                        style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                        required
+                      />
+                    </label>
+                  </div>
+
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: 5, fontWeight: 800, fontSize: 13 }}>
+                    What will you sell?
+                    <input
+                      type="text"
+                      placeholder="e.g. Handmade cookies, artisanal coffees, wooden toys..."
+                      value={stallForm.sell}
+                      onChange={(e) => setStallForm({ ...stallForm, sell: e.target.value })}
+                      style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
+                    />
+                  </label>
+
+                  <button
+                    type="submit"
+                    disabled={stallSubmitting}
+                    style={{
+                      marginTop: 8,
+                      background: '#7A1F2B',
+                      color: '#FFF7EE',
+                      fontSize: 16,
+                      fontWeight: 900,
+                      padding: '13px 24px',
+                      borderRadius: 999,
+                      border: 'none',
+                      cursor: stallSubmitting ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      boxShadow: '0 4px 0 #1A0F0C',
+                    }}
+                  >
+                    {stallSubmitting ? (
+                      <>
+                        <Loader2 className="animate-spin" size={18} />
+                        <span>Sending Booking &amp; Generating Pass...</span>
+                      </>
+                    ) : (
+                      <span>Submit Stall Booking &amp; Get Pass →</span>
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Interactive Modal */}
       <FestivalModal

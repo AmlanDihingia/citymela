@@ -123,13 +123,24 @@ export default function DigitalPassPage({
 
   return (
     <div className="min-h-screen bg-[#141210] text-[#1A0F0C] p-4 sm:p-6 flex flex-col items-center justify-center">
+      {/* Celebratory Booking Confirmation Banner */}
+      <div className="w-full max-w-sm mb-4 bg-[#1F9D55]/15 border-2 border-[#1F9D55]/50 rounded-3xl p-4 text-center text-white space-y-1 shadow-xl animate-fadeIn">
+        <div className="inline-flex items-center gap-2 text-base font-black text-[#22c55e]">
+          <CheckCircle2 className="w-5 h-5 text-[#22c55e]" />
+          <span>Booking Confirmed! 🎉</span>
+        </div>
+        <p className="text-xs text-[#d6d3d1] leading-relaxed">
+          Your registration is confirmed! A copy of this pass has been sent to your email &amp; WhatsApp. Show this QR code at the festival gate.
+        </p>
+      </div>
+
       {/* Wallet Pass Container */}
       <div className="w-full max-w-sm bg-[#FFFBF4] rounded-3xl overflow-hidden shadow-2xl border border-[#2a2622] relative animate-fadeIn">
         {/* Pass Header */}
         <div className="bg-gradient-to-r from-[#B3122A] to-[#870D1F] text-white p-6 text-center relative">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFD400] text-[#111] text-[11px] font-black tracking-widest uppercase mb-2">
             <Sparkles className="w-3 h-3" />
-            <span>Official Event Pass</span>
+            <span>Booking Confirmed &bull; Official Pass</span>
           </div>
           <h1 className="text-xl font-extrabold tracking-tight">Little Guwahati Festival</h1>
           <p className="text-xs text-white/80 mt-0.5">City Mela 2026 • Children’s Day Celebration</p>
@@ -232,6 +243,16 @@ export default function DigitalPassPage({
             </a>
           </div>
         </div>
+      </div>
+
+      {/* Return to homepage */}
+      <div className="mt-6 text-center">
+        <a
+          href="/"
+          className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#1d1a17] hover:bg-[#2a2622] text-[#FFD400] text-xs font-bold transition border border-[#332e29]"
+        >
+          &larr; Back to Festival Homepage
+        </a>
       </div>
     </div>
   )

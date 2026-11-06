@@ -38,7 +38,13 @@ export async function POST(request: Request) {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (rawEmail && !emailRegex.test(rawEmail)) {
+    if (!rawEmail) {
+      return NextResponse.json(
+        { error: 'Email address is required' },
+        { status: 400 }
+      )
+    }
+    if (!emailRegex.test(rawEmail)) {
       return NextResponse.json(
         { error: 'Please enter a valid email address' },
         { status: 400 }

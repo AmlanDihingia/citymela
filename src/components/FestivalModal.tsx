@@ -80,9 +80,12 @@ export default function FestivalModal({
     setError('')
 
     const digits = vendorData.phone.replace(/\D/g, '')
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!vendorData.brandName.trim()) return setError('Please enter your brand or business name.')
     if (!vendorData.contactName.trim()) return setError('Please enter your contact name.')
     if (digits.length < 10) return setError('Please enter a valid 10-digit WhatsApp number.')
+    if (!vendorData.email.trim()) return setError('Email address is required.')
+    if (!emailRegex.test(vendorData.email.trim())) return setError('Please enter a valid email address.')
 
     setSubmitting(true)
 
@@ -110,14 +113,13 @@ export default function FestivalModal({
         body: JSON.stringify(payload),
       })
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        // Even if supabase isn't connected, we can still confirm and redirect to WhatsApp
-        console.warn('API returned non-200:', data)
+      const data = await res.json().catch(() => ({}))
+      if (res.ok && data.ticket_id) {
+        window.location.href = `/pass/${encodeURIComponent(data.ticket_id)}`
+        return
       }
       setSubmitted(true)
     } catch (err: any) {
-      // In case of network glitch, still allow WhatsApp direct connection
       console.warn('Submission issue:', err)
       setSubmitted(true)
     } finally {
@@ -130,8 +132,11 @@ export default function FestivalModal({
     setError('')
 
     const digits = alertData.phone.replace(/\D/g, '')
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!alertData.name.trim()) return setError('Please enter your name.')
     if (digits.length < 10) return setError('Please enter a valid 10-digit WhatsApp number.')
+    if (!alertData.email.trim()) return setError('Email address is required.')
+    if (!emailRegex.test(alertData.email.trim())) return setError('Please enter a valid email address.')
 
     setSubmitting(true)
 
@@ -152,11 +157,16 @@ export default function FestivalModal({
     }
 
     try {
-      await fetch('/api/apply', {
+      const res = await fetch('/api/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
+      const data = await res.json().catch(() => ({}))
+      if (res.ok && data.ticket_id) {
+        window.location.href = `/pass/${encodeURIComponent(data.ticket_id)}`
+        return
+      }
     } catch (err) {
       console.warn('Alert submit notice:', err)
     } finally {
@@ -290,10 +300,11 @@ export default function FestivalModal({
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#6B5560] mb-1.5">
-                  Email <span className="text-xs font-normal text-[#6B5560]">(optional — for enquiry copy)</span>
+                  Email Address <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="email"
+                  required
                   value={vendorData.email}
                   onChange={e => setVendorData({ ...vendorData, email: e.target.value })}
                   placeholder="e.g. brand@example.com"
@@ -400,10 +411,11 @@ export default function FestivalModal({
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#6B5560] mb-1.5">
-                  Email <span className="text-xs font-normal text-[#6B5560]">(optional — for festival updates)</span>
+                  Email Address <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="email"
+                  required
                   value={alertData.email}
                   onChange={e => setAlertData({ ...alertData, email: e.target.value })}
                   placeholder="e.g. ananya@example.com"

@@ -95,7 +95,8 @@ export default function ApplicationForm() {
 
     if (!formData.brand.trim()) return setError('Enter your brand or kitchen name.')
     if (!formData.contact.trim()) return setError('Enter your name.')
-    if (formData.email.trim() && !emailRegex.test(formData.email.trim())) {
+    if (!formData.email.trim()) return setError('Enter your email address.')
+    if (!emailRegex.test(formData.email.trim())) {
       return setError('Please enter a valid email address.')
     }
     if (digits.length < 10) return setError('Enter a valid 10-digit WhatsApp number.')
@@ -136,6 +137,12 @@ export default function ApplicationForm() {
 
       if (!res.ok) {
         throw new Error(result.error || 'Failed to submit application')
+      }
+
+      if (result.ticket_id || result.data?.ticket_id) {
+        const tid = result.ticket_id || result.data?.ticket_id
+        window.location.href = `/pass/${encodeURIComponent(tid)}`
+        return
       }
 
       setSubmittedData({
@@ -249,11 +256,12 @@ export default function ApplicationForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="email" className="block text-sm font-semibold text-[#2A1320] mb-1">
-            Email address <span className="text-xs text-[#6B5560] font-normal">(optional — for email confirmation)</span>
+            Email address <span className="text-[#B3122A]">*</span>
           </label>
           <input
             id="email"
             type="email"
+            required
             inputMode="email"
             value={formData.email}
             onChange={handleChange}
