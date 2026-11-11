@@ -474,6 +474,7 @@ export default function Home() {
                 <button type="button" onClick={() => setPopupModal('stall')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', color: '#FFF7EE', fontWeight: 800, fontSize: 15, padding: 0, whiteSpace: 'nowrap' }}>Book a stall</button>
                 <a href="#partners" style={{ color: '#FFF7EE', textDecoration: 'none', whiteSpace: 'nowrap' }}>Partners</a>
                 <a href="#schools" style={{ color: '#FFF7EE', textDecoration: 'none', whiteSpace: 'nowrap' }}>School rules</a>
+                <a href="/terms" style={{ color: '#FFF7EE', textDecoration: 'none', whiteSpace: 'nowrap' }}>Terms and Conditions</a>
                 <button type="button" onClick={() => setPopupModal('family')} style={{ background: '#FFC93C', color: '#1A0F0C', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 800, padding: '10px 18px', borderRadius: 999, minHeight: 40, boxSizing: 'border-box', display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
                   Family pass
                 </button>
@@ -609,9 +610,6 @@ export default function Home() {
                 {/* 3. Art Workshop — SOLD OUT */}
                 <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10, opacity: 0.7, position: 'relative' }}>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                    <p style={{ margin: 0, background: '#FF6B2C', color: '#FFF7EE', fontWeight: 900, fontSize: 13, letterSpacing: 1, padding: '5px 14px', borderRadius: 999 }}>
-                      ₹299 + GST
-                    </p>
                     <p style={{ margin: 0, background: '#1A0F0C', color: '#FF6B6B', fontWeight: 900, fontSize: 12, letterSpacing: 1.5, padding: '5px 14px', borderRadius: 999, textTransform: 'uppercase' }}>
                       🔴 Sold Out
                     </p>
@@ -732,7 +730,7 @@ export default function Home() {
                     >
                       <option>Kids’ Open Mic (₹199 + GST)</option>
                       <option disabled value="Art Competition (free)">Art Competition (free) — 🔴 Sold Out</option>
-                      <option disabled value="Art Workshop (₹299 + GST)">Art Workshop (₹299 + GST) — 🔴 Sold Out</option>
+                      <option disabled value="Art Workshop">Art Workshop — 🔴 Sold Out</option>
                       <option>AI &amp; Robotics Workshop (₹299 + GST)</option>
                       <option>Try a Music Instrument (free)</option>
                       <option>Crawl Race &amp; Toddler Dash (free)</option>
@@ -1351,7 +1349,6 @@ export default function Home() {
                 </div>
                 <div style={{ background: '#FFF1D6', borderRadius: 20, padding: 20, borderTop: '6px solid #7A1F2B', display: 'flex', flexDirection: 'column', gap: 6, opacity: 0.75 }}>
                   <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                    <p style={{ margin: 0, background: '#FFC93C', color: '#1A0F0C', fontWeight: 900, fontSize: 12, padding: '4px 10px', borderRadius: 999 }}>₹299 + GST</p>
                     <p style={{ margin: 0, background: '#1A0F0C', color: '#FF6B6B', fontWeight: 900, fontSize: 11, padding: '4px 10px', borderRadius: 999 }}>SOLD OUT</p>
                   </div>
                   <h3 style={{ margin: 0, fontSize: 20, color: '#7A1F2B' }}>Art Workshop</h3>
@@ -1962,6 +1959,7 @@ export default function Home() {
         <div style={{ maxWidth: 1240, margin: '0 auto', padding: '24px 16px', display: 'flex', flexWrap: 'wrap', gap: '12px 24px', justifyContent: 'space-between', fontSize: 14 }}>
           <span><strong style={{ color: '#fff', letterSpacing: '0.04em' }}>CITY MELA</strong> · The city comes together</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <a href="/terms" style={{ color: '#a39b8f', textDecoration: 'none' }}>Terms &amp; Conditions</a>
             <a href="https://wa.me/919181051445" target="_blank" rel="noopener noreferrer" style={{ color: '#a39b8f' }}>WhatsApp: +91 91810 51445</a>
             <a href="https://www.citymela.shop" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD400' }}>www.citymela.shop</a>
           </div>
@@ -2106,7 +2104,7 @@ export default function Home() {
                     >
                       <option>Kids’ Open Mic (₹199 + GST)</option>
                       <option disabled value="Art Competition (free)">Art Competition (free) — 🔴 Sold Out</option>
-                      <option disabled value="Art Workshop (₹299 + GST)">Art Workshop (₹299 + GST) — 🔴 Sold Out</option>
+                      <option disabled value="Art Workshop">Art Workshop — 🔴 Sold Out</option>
                       <option>AI &amp; Robotics Workshop (₹299 + GST)</option>
                       <option>Try a Music Instrument (free)</option>
                       <option>Crawl Race &amp; Toddler Dash (free)</option>
