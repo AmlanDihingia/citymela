@@ -26,6 +26,7 @@ interface PassDef {
   unit: string | null
   units: string | null
   soon?: boolean
+  full?: boolean
 }
 
 const PASS_DEFS: PassDef[] = [
@@ -34,8 +35,8 @@ const PASS_DEFS: PassDef[] = [
   { id: 'instr', name: 'Try a Music Instrument · XPO Music', desc: 'All ages, both days · we send you a time slot', price: 0, unit: 'person', units: 'people' },
   { id: 'best', name: 'Best Dressed Family Award', desc: 'Dress up together; our judges find you in the park', price: 0, unit: null, units: null },
   { id: 'mic', name: 'Kids’ Open Mic', desc: 'Ages 5–14 · heats on Saturday, Grand Final on Sunday', price: 199, unit: 'performer', units: 'performers' },
-  { id: 'art', name: 'Art Competition', desc: 'Ages 4–14 · draw on the spot, judged by age group', price: 0, unit: 'child', units: 'children' },
-  { id: 'aws', name: 'Art Workshop', desc: 'Ages 5–14 · materials included · limited seats', price: 299, unit: 'seat', units: 'seats' },
+  { id: 'art', name: 'Art Competition', desc: 'Ages 4–14 · draw on the spot, judged by age group', price: 0, unit: 'child', units: 'children', full: true },
+  { id: 'aws', name: 'Art Workshop', desc: 'Ages 5–14 · materials included · limited seats', price: 299, unit: 'seat', units: 'seats', full: true },
   { id: 'ws', name: 'AI & Robotics Workshop', desc: 'With STEM India · ages 8–14 · 40 seats a session', price: 299, unit: 'seat', units: 'seats' },
   { id: 'crawl', name: 'Crawl Race & Toddler Dash', desc: '6 months to 4 years · Sunday', price: 0, unit: 'little one', units: 'little ones' },
 ]
@@ -173,7 +174,7 @@ export default function Home() {
   const passLines: { label: string; amount: string }[] = []
   const passItems = PASS_DEFS.map((d) => {
     const q = d.unit ? passQty[d.id] || 1 : 1
-    const checked = !d.soon && !!passSel[d.id]
+    const checked = !d.soon && !d.full && !!passSel[d.id]
     const amt = d.price * q
     if (checked) {
       passTotal += amt
@@ -187,7 +188,9 @@ export default function Home() {
       checked,
       showQty: checked && !!d.unit,
       qtyText: `${q} ${q === 1 ? d.unit : d.units}`,
-      priceText: d.soon
+      priceText: d.full
+        ? 'Sold out'
+        : d.soon
         ? 'Coming soon'
         : d.price === 0
         ? 'Free'
@@ -195,7 +198,7 @@ export default function Home() {
         ? `${money(amt)} + GST`
         : `${money(d.price)} + GST${d.unit ? ` / ${d.unit}` : ''}`,
       toggle: () => {
-        if (!d.soon) {
+        if (!d.soon && !d.full) {
           setPassSel((prev) => ({ ...prev, [d.id]: !checked }))
         }
       },
@@ -232,6 +235,9 @@ export default function Home() {
     if (!kidsForm.email.trim()) return setKidsError('Email address is mandatory for registration confirmation.')
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(kidsForm.email.trim())) {
       return setKidsError('Please enter a valid email address.')
+    }
+    if (kidsForm.activity.toLowerCase().includes('art competition') || kidsForm.activity.toLowerCase().includes('art workshop')) {
+      return setKidsError('Online registrations for this activity are at maximum capacity (Sold Out). Please choose another activity.')
     }
     if (phoneDigits.length < 10) return setKidsError('Please enter a valid 10-digit WhatsApp number.')
     if (!kidsForm.consent) return setKidsError('Parent or guardian consent is required to register.')
@@ -574,11 +580,16 @@ export default function Home() {
                   </button>
                 </div>
 
-                {/* 2. Art Competition */}
-                <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <p style={{ margin: 0, alignSelf: 'flex-start', background: '#7A1F2B', color: '#FFF7EE', fontWeight: 900, fontSize: 13, letterSpacing: 1, padding: '5px 14px', borderRadius: 999 }}>
-                    FREE
-                  </p>
+                {/* 2. Art Competition — SOLD OUT */}
+                <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10, opacity: 0.7, position: 'relative' }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <p style={{ margin: 0, background: '#7A1F2B', color: '#FFF7EE', fontWeight: 900, fontSize: 13, letterSpacing: 1, padding: '5px 14px', borderRadius: 999 }}>
+                      FREE
+                    </p>
+                    <p style={{ margin: 0, background: '#1A0F0C', color: '#FF6B6B', fontWeight: 900, fontSize: 12, letterSpacing: 1.5, padding: '5px 14px', borderRadius: 999, textTransform: 'uppercase' }}>
+                      🔴 Sold Out
+                    </p>
+                  </div>
                   <h3 style={{ margin: 0, fontFamily: "'Bagel Fat One', Arial, sans-serif", fontWeight: 400, fontSize: 'clamp(24px, 4.5vw, 30px)', lineHeight: 1.1, color: '#7A1F2B' }}>
                     Art Competition
                   </h3>
@@ -588,18 +599,23 @@ export default function Home() {
                   <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#5A4038' }}>Ages 4–14 · Both days</p>
                   <button
                     type="button"
-                    onClick={() => handleSelectActivity("Art Competition", "free")}
-                    style={{ background: '#7A1F2B', color: '#FFF7EE', fontWeight: 900, fontSize: 16, padding: '12px 22px', borderRadius: 999, boxShadow: '0 5px 0 #1A0F0C', border: 'none', fontFamily: 'inherit', cursor: 'pointer', minHeight: 46, alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                    disabled
+                    style={{ background: '#EADDD3', color: '#8C7E74', fontWeight: 900, fontSize: 16, padding: '12px 22px', borderRadius: 999, boxShadow: '0 5px 0 #D5CBC3', border: 'none', fontFamily: 'inherit', cursor: 'not-allowed', minHeight: 46, alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                   >
-                    Sign up
+                    🔒 Registrations Closed
                   </button>
                 </div>
 
-                {/* 3. Art Workshop */}
-                <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <p style={{ margin: 0, alignSelf: 'flex-start', background: '#FF6B2C', color: '#FFF7EE', fontWeight: 900, fontSize: 13, letterSpacing: 1, padding: '5px 14px', borderRadius: 999 }}>
-                    ₹299 + GST
-                  </p>
+                {/* 3. Art Workshop — SOLD OUT */}
+                <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10, opacity: 0.7, position: 'relative' }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <p style={{ margin: 0, background: '#FF6B2C', color: '#FFF7EE', fontWeight: 900, fontSize: 13, letterSpacing: 1, padding: '5px 14px', borderRadius: 999 }}>
+                      ₹299 + GST
+                    </p>
+                    <p style={{ margin: 0, background: '#1A0F0C', color: '#FF6B6B', fontWeight: 900, fontSize: 12, letterSpacing: 1.5, padding: '5px 14px', borderRadius: 999, textTransform: 'uppercase' }}>
+                      🔴 Sold Out
+                    </p>
+                  </div>
                   <h3 style={{ margin: 0, fontFamily: "'Bagel Fat One', Arial, sans-serif", fontWeight: 400, fontSize: 'clamp(24px, 4.5vw, 30px)', lineHeight: 1.1, color: '#7A1F2B' }}>
                     Art Workshop
                   </h3>
@@ -609,10 +625,10 @@ export default function Home() {
                   <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#5A4038' }}>Ages 5–14 · Both days · Limited seats</p>
                   <button
                     type="button"
-                    onClick={() => handleSelectActivity("Art Workshop", "₹299 + GST")}
-                    style={{ background: '#7A1F2B', color: '#FFF7EE', fontWeight: 900, fontSize: 16, padding: '12px 22px', borderRadius: 999, boxShadow: '0 5px 0 #1A0F0C', border: 'none', fontFamily: 'inherit', cursor: 'pointer', minHeight: 46, alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                    disabled
+                    style={{ background: '#EADDD3', color: '#8C7E74', fontWeight: 900, fontSize: 16, padding: '12px 22px', borderRadius: 999, boxShadow: '0 5px 0 #D5CBC3', border: 'none', fontFamily: 'inherit', cursor: 'not-allowed', minHeight: 46, alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                   >
-                    Sign up
+                    🔒 Registrations Closed
                   </button>
                 </div>
 
@@ -715,8 +731,8 @@ export default function Home() {
                       style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 16, padding: '12px 14px', border: '2px solid #1A0F0C', borderRadius: 12, background: '#FFFFFF', color: '#1A0F0C', minHeight: 48 }}
                     >
                       <option>Kids’ Open Mic (₹199 + GST)</option>
-                      <option>Art Competition (free)</option>
-                      <option>Art Workshop (₹299 + GST)</option>
+                      <option disabled value="Art Competition (free)">Art Competition (free) — 🔴 Sold Out</option>
+                      <option disabled value="Art Workshop (₹299 + GST)">Art Workshop (₹299 + GST) — 🔴 Sold Out</option>
                       <option>AI &amp; Robotics Workshop (₹299 + GST)</option>
                       <option>Try a Music Instrument (free)</option>
                       <option>Crawl Race &amp; Toddler Dash (free)</option>
@@ -909,18 +925,25 @@ export default function Home() {
                       key={item.id}
                       style={{ background: '#FFF7EE', borderRadius: 20, padding: '16px 18px', boxShadow: '0 5px 0 #1A0F0C', display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between' }}
                     >
-                      <label style={{ flex: '1 1 200px', minWidth: 0, display: 'flex', gap: 12, alignItems: 'flex-start', cursor: item.soon ? 'not-allowed' : 'pointer', opacity: item.soon ? 0.75 : 1 }}>
+                      <label style={{ flex: '1 1 200px', minWidth: 0, display: 'flex', gap: 12, alignItems: 'flex-start', cursor: item.soon || item.full ? 'not-allowed' : 'pointer', opacity: item.soon || item.full ? 0.65 : 1 }}>
                         <input
                           type="checkbox"
                           checked={item.checked}
-                          disabled={item.soon}
+                          disabled={item.soon || item.full}
                           onChange={item.toggle}
                           style={{ width: 24, height: 24, marginTop: 2, flexShrink: 0, accentColor: '#7A1F2B' }}
                         />
                         <span style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                          <span style={{ fontSize: 18, fontWeight: 900, color: '#7A1F2B' }}>{item.name}</span>
+                          <span style={{ fontSize: 18, fontWeight: 900, color: '#7A1F2B', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                            {item.name}
+                            {item.full && (
+                              <span style={{ background: '#1A0F0C', color: '#FF6B6B', fontSize: 10, fontWeight: 900, padding: '2px 8px', borderRadius: 999, letterSpacing: 1 }}>
+                                SOLD OUT
+                              </span>
+                            )}
+                          </span>
                           <span style={{ fontSize: 14, lineHeight: 1.4, color: '#5A4038' }}>
-                            {item.soon ? `${item.desc} · Coming soon` : item.desc}
+                            {item.full ? `${item.desc} · Online registrations full` : item.soon ? `${item.desc} · Coming soon` : item.desc}
                           </span>
                         </span>
                       </label>
@@ -1326,13 +1349,19 @@ export default function Home() {
                   <h3 style={{ margin: 0, fontSize: 20, color: '#7A1F2B' }}>AI &amp; Robotics Workshop</h3>
                   <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5 }}>Hands-on with STEM India. Seats are limited for each session.</p>
                 </div>
-                <div style={{ background: '#FFF1D6', borderRadius: 20, padding: 20, borderTop: '6px solid #7A1F2B', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <p style={{ margin: 0, alignSelf: 'flex-start', background: '#FFC93C', color: '#1A0F0C', fontWeight: 900, fontSize: 12, padding: '4px 10px', borderRadius: 999 }}>₹299 + GST</p>
+                <div style={{ background: '#FFF1D6', borderRadius: 20, padding: 20, borderTop: '6px solid #7A1F2B', display: 'flex', flexDirection: 'column', gap: 6, opacity: 0.75 }}>
+                  <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                    <p style={{ margin: 0, background: '#FFC93C', color: '#1A0F0C', fontWeight: 900, fontSize: 12, padding: '4px 10px', borderRadius: 999 }}>₹299 + GST</p>
+                    <p style={{ margin: 0, background: '#1A0F0C', color: '#FF6B6B', fontWeight: 900, fontSize: 11, padding: '4px 10px', borderRadius: 999 }}>SOLD OUT</p>
+                  </div>
                   <h3 style={{ margin: 0, fontSize: 20, color: '#7A1F2B' }}>Art Workshop</h3>
                   <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5 }}>Learn a new technique with a working artist, materials included.</p>
                 </div>
-                <div style={{ background: '#FFF1D6', borderRadius: 20, padding: 20, borderTop: '6px solid #7A1F2B', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <p style={{ margin: 0, alignSelf: 'flex-start', background: '#7A1F2B', color: '#FFF7EE', fontWeight: 900, fontSize: 12, padding: '4px 10px', borderRadius: 999 }}>FREE</p>
+                <div style={{ background: '#FFF1D6', borderRadius: 20, padding: 20, borderTop: '6px solid #7A1F2B', display: 'flex', flexDirection: 'column', gap: 6, opacity: 0.75 }}>
+                  <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                    <p style={{ margin: 0, background: '#7A1F2B', color: '#FFF7EE', fontWeight: 900, fontSize: 12, padding: '4px 10px', borderRadius: 999 }}>FREE</p>
+                    <p style={{ margin: 0, background: '#1A0F0C', color: '#FF6B6B', fontWeight: 900, fontSize: 11, padding: '4px 10px', borderRadius: 999 }}>SOLD OUT</p>
+                  </div>
                   <h3 style={{ margin: 0, fontSize: 20, color: '#7A1F2B' }}>Art Competition</h3>
                   <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5 }}>Draw on the spot, judged by age group, with prizes.</p>
                 </div>
@@ -2076,8 +2105,8 @@ export default function Home() {
                       style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid #1A0F0C', borderRadius: 10, background: '#FFFFFF', color: '#1A0F0C' }}
                     >
                       <option>Kids’ Open Mic (₹199 + GST)</option>
-                      <option>Art Competition (free)</option>
-                      <option>Art Workshop (₹299 + GST)</option>
+                      <option disabled value="Art Competition (free)">Art Competition (free) — 🔴 Sold Out</option>
+                      <option disabled value="Art Workshop (₹299 + GST)">Art Workshop (₹299 + GST) — 🔴 Sold Out</option>
                       <option>AI &amp; Robotics Workshop (₹299 + GST)</option>
                       <option>Try a Music Instrument (free)</option>
                       <option>Crawl Race &amp; Toddler Dash (free)</option>
