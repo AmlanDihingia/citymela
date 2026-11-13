@@ -229,6 +229,10 @@ export default function Home() {
     setKidsError('')
     setKidsSuccess('')
 
+    setKidsError('Online registrations for the Little Guwahati Festival are now closed. See you at the festival!')
+    setKidsSubmitting(false)
+    return
+
     const phoneDigits = kidsForm.phone.replace(/\D/g, '').slice(-10)
     if (!kidsForm.name.trim()) return setKidsError('Please enter the participant’s name.')
     if (!kidsForm.parent.trim()) return setKidsError('Please enter the parent or guardian’s name.')
@@ -283,6 +287,10 @@ export default function Home() {
     setFamilyError('')
     setFamilySuccess('')
 
+    setFamilyError('Online registrations for the Little Guwahati Festival are now closed. See you at the festival!')
+    setFamilySubmitting(false)
+    return
+
     const phoneDigits = familyForm.phone.replace(/\D/g, '').slice(-10)
     if (!familyForm.name.trim()) return setFamilyError('Please enter your full name.')
     if (!familyForm.email.trim()) return setFamilyError('Email address is mandatory to receive your digital entry pass.')
@@ -333,6 +341,10 @@ export default function Home() {
     setSchoolError('')
     setSchoolSuccess('')
 
+    setSchoolError('Online registrations for the Little Guwahati Festival are now closed. See you at the festival!')
+    setSchoolSubmitting(false)
+    return
+
     const phoneDigits = schoolForm.phone.replace(/\D/g, '').slice(-10)
     if (!schoolForm.name.trim()) return setSchoolError('Please enter your school name.')
     if (!schoolForm.contact.trim()) return setSchoolError('Please enter your contact name.')
@@ -382,6 +394,10 @@ export default function Home() {
     e.preventDefault()
     setStallError('')
     setStallSuccess('')
+
+    setStallError('Online registrations for the Little Guwahati Festival are now closed. See you at the festival!')
+    setStallSubmitting(false)
+    return
 
     const phoneDigits = stallForm.phone.replace(/\D/g, '').slice(-10)
     if (!stallForm.biz.trim()) return setStallError('Please enter your brand or business name.')
@@ -456,6 +472,28 @@ export default function Home() {
             })}
           </nav>
         </div>
+
+        {/* Mandatory Park Tickets Banner */}
+        <div
+          role="alert"
+          style={{
+            background: '#FFC93C',
+            color: '#1A0F0C',
+            padding: '9px 16px',
+            textAlign: 'center',
+            fontWeight: 900,
+            fontSize: 'clamp(13px, 2.5vw, 15px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            letterSpacing: '0.02em',
+            borderTop: '1px solid rgba(0,0,0,0.15)',
+          }}
+        >
+          <span aria-hidden="true" style={{ fontSize: 16 }}>🎟️</span>
+          <span>Park Tickets Are Mandatory for Both Days</span>
+        </div>
       </header>
 
       {/* ============ LITTLE GUWAHATI FESTIVAL ============ */}
@@ -496,15 +534,9 @@ export default function Home() {
                   Two days of shows, music, play, free health check-ups and the Coolest School Championship, on the Brahmaputra riverfront. 14–15 November 2026.
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-                  <button type="button" onClick={() => setPopupModal('kids')} style={{ background: '#FFC93C', color: '#1A0F0C', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 900, fontSize: 'clamp(15px, 2.8vw, 18px)', padding: '14px 24px', borderRadius: 999, boxShadow: '0 6px 0 #1A0F0C', minHeight: 48, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxSizing: 'border-box' }}>
-                    Sign up for an activity
-                  </button>
-                  <button type="button" onClick={() => setPopupModal('family')} style={{ background: '#FFF7EE', color: '#7A1F2B', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 900, fontSize: 'clamp(15px, 2.8vw, 18px)', padding: '14px 24px', borderRadius: 999, boxShadow: '0 6px 0 #1A0F0C', minHeight: 48, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxSizing: 'border-box' }}>
-                    Get your family pass
-                  </button>
-                  <button type="button" onClick={() => setPopupModal('stall')} style={{ background: '#1A0F0C', color: '#FFC93C', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 900, fontSize: 'clamp(15px, 2.8vw, 18px)', padding: '14px 24px', borderRadius: 999, boxShadow: '0 6px 0 #FFC93C', minHeight: 48, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxSizing: 'border-box' }}>
-                    Book your stall
-                  </button>
+                  <div style={{ background: '#FFF7EE', color: '#7A1F2B', fontFamily: 'inherit', fontWeight: 900, fontSize: 'clamp(15px, 2.8vw, 18px)', padding: '14px 24px', borderRadius: 999, boxShadow: '0 6px 0 #1A0F0C', minHeight: 48, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxSizing: 'border-box' }}>
+                    🔒 Online registrations are closed — see you at the festival!
+                  </div>
                 </div>
               </div>
 
@@ -541,7 +573,7 @@ export default function Home() {
               <div style={{ background: '#1A0F0C', color: '#FFF7EE', borderRadius: 20, padding: 'clamp(18px, 4vw, 24px)', boxShadow: '0 6px 0 #7A1F2B' }}>
                 <p style={{ margin: 0, fontWeight: 900, letterSpacing: 2, fontSize: 13, color: '#FFC93C' }}>ENTRY</p>
                 <p style={{ margin: '6px 0 0', fontFamily: "'Bagel Fat One', Arial, sans-serif", fontSize: 'clamp(24px, 4.5vw, 30px)', color: '#FFC93C' }}>Park ticket</p>
-                <p style={{ margin: '4px 0 0', fontSize: 15 }}>Get your free family pass online</p>
+                <p style={{ margin: '4px 0 0', fontSize: 15 }}>Mandatory for both days at the gate</p>
               </div>
             </div>
           </section>
@@ -561,7 +593,7 @@ export default function Home() {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 18 }}>
                 {/* 1. Open Mic */}
-                <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10, opacity: 0.7 }}>
                   <p style={{ margin: 0, alignSelf: 'flex-start', background: '#FFC93C', color: '#1A0F0C', fontWeight: 900, fontSize: 13, letterSpacing: 1, padding: '5px 14px', borderRadius: 999 }}>
                     ₹199 + GST
                   </p>
@@ -574,10 +606,10 @@ export default function Home() {
                   <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#5A4038' }}>Ages 5–14 · Main stage</p>
                   <button
                     type="button"
-                    onClick={() => handleSelectActivity("Kids’ Open Mic", "₹199 + GST")}
-                    style={{ background: '#7A1F2B', color: '#FFF7EE', fontWeight: 900, fontSize: 16, padding: '12px 22px', borderRadius: 999, boxShadow: '0 5px 0 #1A0F0C', border: 'none', fontFamily: 'inherit', cursor: 'pointer', minHeight: 46, alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                    disabled
+                    style={{ background: '#EADDD3', color: '#8C7E74', fontWeight: 900, fontSize: 16, padding: '12px 22px', borderRadius: 999, boxShadow: '0 5px 0 #D5CBC3', border: 'none', fontFamily: 'inherit', cursor: 'not-allowed', minHeight: 46, alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                   >
-                    Sign up
+                    🔒 Registrations Closed
                   </button>
                 </div>
 
@@ -631,7 +663,7 @@ export default function Home() {
                 </div>
 
                 {/* 4. AI & Robotics Workshop */}
-                <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10, opacity: 0.7 }}>
                   <p style={{ margin: 0, alignSelf: 'flex-start', background: '#FF6B2C', color: '#FFF7EE', fontWeight: 900, fontSize: 13, letterSpacing: 1, padding: '5px 14px', borderRadius: 999 }}>
                     ₹299 + GST
                   </p>
@@ -644,15 +676,15 @@ export default function Home() {
                   <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#5A4038' }}>Ages 8–14 · Saturday and Sunday · 40 seats a session</p>
                   <button
                     type="button"
-                    onClick={() => handleSelectActivity("AI & Robotics Workshop", "₹299 + GST")}
-                    style={{ background: '#7A1F2B', color: '#FFF7EE', fontWeight: 900, fontSize: 16, padding: '12px 22px', borderRadius: 999, boxShadow: '0 5px 0 #1A0F0C', border: 'none', fontFamily: 'inherit', cursor: 'pointer', minHeight: 46, alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                    disabled
+                    style={{ background: '#EADDD3', color: '#8C7E74', fontWeight: 900, fontSize: 16, padding: '12px 22px', borderRadius: 999, boxShadow: '0 5px 0 #D5CBC3', border: 'none', fontFamily: 'inherit', cursor: 'not-allowed', minHeight: 46, alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                   >
-                    Sign up
+                    🔒 Registrations Closed
                   </button>
                 </div>
 
                 {/* 5. Music Instrument */}
-                <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10, opacity: 0.7 }}>
                   <p style={{ margin: 0, alignSelf: 'flex-start', background: '#7A1F2B', color: '#FFF7EE', fontWeight: 900, fontSize: 13, letterSpacing: 1, padding: '5px 14px', borderRadius: 999 }}>
                     FREE
                   </p>
@@ -665,15 +697,15 @@ export default function Home() {
                   <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#5A4038' }}>All ages · Both days</p>
                   <button
                     type="button"
-                    onClick={() => handleSelectActivity("Try a Music Instrument", "free")}
-                    style={{ background: '#7A1F2B', color: '#FFF7EE', fontWeight: 900, fontSize: 16, padding: '12px 22px', borderRadius: 999, boxShadow: '0 5px 0 #1A0F0C', border: 'none', fontFamily: 'inherit', cursor: 'pointer', minHeight: 46, alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                    disabled
+                    style={{ background: '#EADDD3', color: '#8C7E74', fontWeight: 900, fontSize: 16, padding: '12px 22px', borderRadius: 999, boxShadow: '0 5px 0 #D5CBC3', border: 'none', fontFamily: 'inherit', cursor: 'not-allowed', minHeight: 46, alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                   >
-                    Sign up
+                    🔒 Registrations Closed
                   </button>
                 </div>
 
                 {/* 6. Crawl Race */}
-                <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10, opacity: 0.7 }}>
                   <p style={{ margin: 0, alignSelf: 'flex-start', background: '#7A1F2B', color: '#FFF7EE', fontWeight: 900, fontSize: 13, letterSpacing: 1, padding: '5px 14px', borderRadius: 999 }}>
                     FREE
                   </p>
@@ -686,10 +718,10 @@ export default function Home() {
                   <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#5A4038' }}>6 months–4 years · Sunday</p>
                   <button
                     type="button"
-                    onClick={() => handleSelectActivity("Crawl Race & Toddler Dash", "free")}
-                    style={{ background: '#7A1F2B', color: '#FFF7EE', fontWeight: 900, fontSize: 16, padding: '12px 22px', borderRadius: 999, boxShadow: '0 5px 0 #1A0F0C', border: 'none', fontFamily: 'inherit', cursor: 'pointer', minHeight: 46, alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                    disabled
+                    style={{ background: '#EADDD3', color: '#8C7E74', fontWeight: 900, fontSize: 16, padding: '12px 22px', borderRadius: 999, boxShadow: '0 5px 0 #D5CBC3', border: 'none', fontFamily: 'inherit', cursor: 'not-allowed', minHeight: 46, alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                   >
-                    Sign up
+                    🔒 Registrations Closed
                   </button>
                 </div>
               </div>
@@ -830,7 +862,7 @@ export default function Home() {
                     disabled={kidsSubmitting}
                     style={{ background: '#FFC93C', color: '#1A0F0C', fontWeight: 900, fontSize: 17, padding: '14px 24px', borderRadius: 999, boxShadow: '0 5px 0 #1A0F0C', border: 'none', fontFamily: 'inherit', cursor: kidsSubmitting ? 'not-allowed' : 'pointer', minHeight: 48, gridColumn: '1 / -1', justifySelf: 'start', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
                   >
-                    {kidsSubmitting ? 'Registering...' : 'Sign me up'}
+                    {'🔒 Registrations Closed'}
                   </button>
                 </form>
               </div>
@@ -1094,7 +1126,7 @@ export default function Home() {
                       disabled={familySubmitting}
                       style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 17, padding: '14px 24px', boxShadow: '0 5px 0 #1A0F0C', border: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', minHeight: 48, borderRadius: 999, fontWeight: 900, fontFamily: 'inherit', cursor: familySubmitting ? 'not-allowed' : 'pointer', width: '100%' }}
                     >
-                      {familySubmitting ? 'Registering...' : passCtaText}
+                      {'🔒 Registrations Closed'}
                     </button>
                   </form>
 
@@ -1310,7 +1342,7 @@ export default function Home() {
                     disabled={schoolSubmitting}
                     style={{ background: '#7A1F2B', color: '#FFF7EE', fontWeight: 900, fontSize: 17, padding: '14px 24px', borderRadius: 999, boxShadow: '0 5px 0 #1A0F0C', border: 'none', fontFamily: 'inherit', cursor: schoolSubmitting ? 'not-allowed' : 'pointer', minHeight: 48, gridColumn: '1 / -1', justifySelf: 'start', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
                   >
-                    {schoolSubmitting ? 'Registering...' : 'Register my school'}
+                    {'🔒 Registrations Closed'}
                   </button>
                 </form>
               </div>
@@ -1363,7 +1395,7 @@ export default function Home() {
                   <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5 }}>Draw on the spot, judged by age group, with prizes.</p>
                 </div>
                 <div style={{ background: '#FFF1D6', borderRadius: 20, padding: 20, borderTop: '6px solid #7A1F2B', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <p style={{ margin: 0, alignSelf: 'flex-start', background: '#FFC93C', color: '#1A0F0C', fontWeight: 900, fontSize: 12, padding: '4px 10px', borderRadius: 999 }}>REGISTER</p>
+                  <p style={{ margin: 0, alignSelf: 'flex-start', background: '#1A0F0C', color: '#FF6B6B', fontWeight: 900, fontSize: 12, padding: '4px 10px', borderRadius: 999 }}>CLOSED</p>
                   <h3 style={{ margin: 0, fontSize: 20, color: '#7A1F2B' }}>Baby Crawl Race &amp; Toddler Dash</h3>
                   <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5 }}>For babies 6–18 months and toddlers 2–4, on the main stage on Sunday.</p>
                 </div>
@@ -1489,8 +1521,8 @@ export default function Home() {
                     <li>Power point and lights</li>
                     <li>Listed on the festival map</li>
                   </ul>
-                  <button type="button" onClick={() => { setStallForm(prev => ({ ...prev, type: 'Food stall · 10×10 ft · ₹12,000 + GST' })); setPopupModal('stall'); }} style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'pointer', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
-                    Book this stall
+                  <button type="button" disabled style={{ background: '#EADDD3', color: '#8C7E74', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #D5CBC3', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'not-allowed', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
+                    🔒 Bookings Closed
                   </button>
                 </div>
                 <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -1502,8 +1534,8 @@ export default function Home() {
                     <li>Power point and lights</li>
                     <li>Listed on the festival map</li>
                   </ul>
-                  <button type="button" onClick={() => { setStallForm(prev => ({ ...prev, type: 'Food stall · 5×10 ft · ₹5,000 + GST' })); setPopupModal('stall'); }} style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'pointer', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
-                    Book this stall
+                  <button type="button" disabled style={{ background: '#EADDD3', color: '#8C7E74', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #D5CBC3', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'not-allowed', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
+                    🔒 Bookings Closed
                   </button>
                 </div>
               </div>
@@ -1519,8 +1551,8 @@ export default function Home() {
                     <li>Power point and lights</li>
                     <li>Listed on the festival map</li>
                   </ul>
-                  <button type="button" onClick={() => { setStallForm(prev => ({ ...prev, type: 'Shopping stall · 5×10 ft shared · ₹7,000 + GST' })); setPopupModal('stall'); }} style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'pointer', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
-                    Book this stall
+                  <button type="button" disabled style={{ background: '#EADDD3', color: '#8C7E74', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #D5CBC3', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'not-allowed', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
+                    🔒 Bookings Closed
                   </button>
                 </div>
                 <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -1532,8 +1564,8 @@ export default function Home() {
                     <li>Power point and lights</li>
                     <li>Listed on the festival map</li>
                   </ul>
-                  <button type="button" onClick={() => { setStallForm(prev => ({ ...prev, type: 'Shopping stall · 10×10 ft · ₹15,000 + GST' })); setPopupModal('stall'); }} style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'pointer', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
-                    Book this stall
+                  <button type="button" disabled style={{ background: '#EADDD3', color: '#8C7E74', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #D5CBC3', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'not-allowed', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
+                    🔒 Bookings Closed
                   </button>
                 </div>
                 <div style={{ background: '#FFF7EE', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', boxShadow: '0 6px 0 #1A0F0C', display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -1545,8 +1577,8 @@ export default function Home() {
                     <li>Power point and lights</li>
                     <li>Featured on the festival map</li>
                   </ul>
-                  <button type="button" onClick={() => { setStallForm(prev => ({ ...prev, type: 'Shopping stall · 20×10 ft · ₹30,000 + GST' })); setPopupModal('stall'); }} style={{ background: '#7A1F2B', color: '#FFF7EE', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #1A0F0C', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'pointer', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
-                    Book this stall
+                  <button type="button" disabled style={{ background: '#EADDD3', color: '#8C7E74', fontSize: 16, padding: '12px 22px', boxShadow: '0 5px 0 #D5CBC3', minHeight: 46, borderRadius: 999, border: 'none', cursor: 'not-allowed', fontWeight: 900, fontFamily: 'inherit', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center' }}>
+                    🔒 Bookings Closed
                   </button>
                 </div>
               </div>
@@ -1659,7 +1691,7 @@ export default function Home() {
                     disabled={stallSubmitting}
                     style={{ background: '#FFC93C', color: '#1A0F0C', fontSize: 17, padding: '14px 24px', boxShadow: '0 5px 0 #1A0F0C', border: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: 48, borderRadius: 999, fontWeight: 900, fontFamily: 'inherit', cursor: stallSubmitting ? 'not-allowed' : 'pointer', gridColumn: '1 / -1', justifySelf: 'start' }}
                   >
-                    {stallSubmitting ? 'Sending...' : 'Send booking request'}
+                    {'🔒 Registrations Closed'}
                   </button>
                 </form>
               </div>
