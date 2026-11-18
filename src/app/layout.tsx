@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.citymela.space'),
   title: 'City Mela Festivals · Guwahati',
   description:
-    'Guwahati comes together: Little Guwahati Festival (14–15 Nov), Discount Dhamaka (27 Nov – 2 Dec), and Brahmaputra Winter Carnival (23–31 Dec).',
+    'Guwahati comes together: Brahmaputra Winter Carnival (23–31 Dec), Discount Dhamaka (27 Nov – 2 Dec), and Little Guwahati Festival.',
   icons: {
     icon: [
       { url: '/favicon.ico' },
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'City Mela Festivals · Guwahati',
     description:
-      'Guwahati comes together: Little Guwahati Festival (14–15 Nov), Discount Dhamaka (27 Nov – 2 Dec), and Brahmaputra Winter Carnival (23–31 Dec).',
+      'Guwahati comes together: Brahmaputra Winter Carnival (23–31 Dec), Discount Dhamaka (27 Nov – 2 Dec), and Little Guwahati Festival.',
     url: 'https://www.citymela.space',
     siteName: 'City Mela Festivals',
     locale: 'en_IN',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'City Mela Festivals · Guwahati',
     description:
-      'Guwahati comes together: Little Guwahati Festival (14–15 Nov), Discount Dhamaka (27 Nov – 2 Dec), and Brahmaputra Winter Carnival (23–31 Dec).',
+      'Guwahati comes together: Brahmaputra Winter Carnival (23–31 Dec), Discount Dhamaka (27 Nov – 2 Dec), and Little Guwahati Festival.',
     images: ['/og-image-wide.jpg'],
   },
 }

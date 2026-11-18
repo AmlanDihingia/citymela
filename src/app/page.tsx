@@ -13,9 +13,9 @@ interface FestivalTab {
 }
 
 const TABS: FestivalTab[] = [
-  { id: 'lgf', label: 'Little Guwahati Festival', dates: '14–15 Nov' },
-  { id: 'dd', label: 'Discount Dhamaka', dates: '27 Nov – 2 Dec' },
   { id: 'bwc', label: 'Brahmaputra Winter Carnival', dates: '23–31 Dec' },
+  { id: 'dd', label: 'Discount Dhamaka', dates: '27 Nov – 2 Dec' },
+  { id: 'lgf', label: 'Little Guwahati Festival', dates: '14–15 Nov' },
 ]
 
 interface PassDef {
@@ -44,7 +44,7 @@ const PASS_DEFS: PassDef[] = [
 const money = (n: number) => (n === 0 ? 'Free' : '₹' + n.toLocaleString('en-IN'))
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<FestivalId>('lgf')
+  const [activeTab, setActiveTab] = useState<FestivalId>('bwc')
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'vendor' | 'alert'>('vendor')
   const [popupModal, setPopupModal] = useState<'none' | 'kids' | 'family' | 'school' | 'stall'>('none')
@@ -473,27 +473,29 @@ export default function Home() {
           </nav>
         </div>
 
-        {/* Mandatory Park Tickets Banner */}
-        <div
-          role="alert"
-          style={{
-            background: '#FFC93C',
-            color: '#1A0F0C',
-            padding: '9px 16px',
-            textAlign: 'center',
-            fontWeight: 900,
-            fontSize: 'clamp(13px, 2.5vw, 15px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            letterSpacing: '0.02em',
-            borderTop: '1px solid rgba(0,0,0,0.15)',
-          }}
-        >
-          <span aria-hidden="true" style={{ fontSize: 16 }}>🎟️</span>
-          <span>Park Tickets Are Mandatory for Both Days</span>
-        </div>
+        {/* Mandatory Park Tickets Banner (LGF only) */}
+        {activeTab === 'lgf' && (
+          <div
+            role="alert"
+            style={{
+              background: '#FFC93C',
+              color: '#1A0F0C',
+              padding: '9px 16px',
+              textAlign: 'center',
+              fontWeight: 900,
+              fontSize: 'clamp(13px, 2.5vw, 15px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              letterSpacing: '0.02em',
+              borderTop: '1px solid rgba(0,0,0,0.15)',
+            }}
+          >
+            <span aria-hidden="true" style={{ fontSize: 16 }}>🎟️</span>
+            <span>Park Tickets Are Mandatory for Both Days</span>
+          </div>
+        )}
       </header>
 
       {/* ============ LITTLE GUWAHATI FESTIVAL ============ */}
