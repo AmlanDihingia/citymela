@@ -1,10 +1,12 @@
 export const revalidate = 0 // Disable caching so submissions are always live
 
 import React from 'react'
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
+import { createClient as createServerSupabase } from '@/lib/supabase/server'
 import { getLocalApplications } from '@/lib/storage'
 import { ApplicationPayload } from '@/lib/supabase'
-import { Download, MessageCircle, Store, Calendar, Tag, RefreshCw } from 'lucide-react'
+import { MessageCircle, Store, Calendar, RefreshCw, LogOut, Tag } from 'lucide-react'
 
 const formatDate = (dateString: string) => {
   try {
@@ -21,12 +23,28 @@ const formatDate = (dateString: string) => {
 }
 
 export default async function DashboardPage() {
-  // 1. Fetch local applications
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  let currentUserEmail: string | null = null
+
+  // 1. Verify authenticated user
+  if (supabaseUrl && !supabaseUrl.includes('placeholder.supabase.co')) {
+    try {
+      const serverSupabase = await createServerSupabase()
+      const { data: { user } } = await serverSupabase.auth.getUser()
+      if (!user) {
+        redirect('/login')
+      }
+      currentUserEmail = user.email || null
+    } catch {
+      // Allow fallback if auth cannot connect in local-only dev
+    }
+  }
+
+  // 2. Fetch local applications
   const localApps = await getLocalApplications()
 
-  // 2. Fetch Supabase applications if configured
+  // 3. Fetch Supabase applications if configured
   let supabaseApps: ApplicationPayload[] = []
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 
   if (supabaseUrl && !supabaseUrl.includes('placeholder.supabase.co')) {
     try {
@@ -78,6 +96,11 @@ export default async function DashboardPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            {currentUserEmail && (
+              <span className="text-xs bg-[#2a2622] text-[#d8d2c8] px-3.5 py-2 rounded-full border border-[#38332e]">
+                Logged in as <strong className="text-white">{currentUserEmail}</strong>
+              </span>
+            )}
             <a
               href="/verify"
               className="inline-flex items-center gap-2 bg-[#FFD400] hover:bg-[#e6bf00] text-[#111] px-5 py-2.5 rounded-full text-sm font-bold transition shadow-md"
@@ -97,6 +120,15 @@ export default async function DashboardPage() {
             >
               ← View Landing Page
             </a>
+            <form action="/auth/signout" method="POST">
+              <button
+                type="submit"
+                className="inline-flex items-center gap-1.5 bg-[#2a2622] hover:bg-red-500/20 hover:text-red-400 text-[#d8d2c8] px-4 py-2.5 rounded-full text-sm font-semibold transition cursor-pointer"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </button>
+            </form>
           </div>
         </header>
 
