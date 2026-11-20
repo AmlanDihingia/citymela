@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import FestivalModal from '@/components/FestivalModal'
+import ChristmasTownSection from '@/components/ChristmasTownSection'
 import { X, Sparkles, AlertCircle, Loader2 } from 'lucide-react'
 
 type FestivalId = 'lgf' | 'dd' | 'bwc'
@@ -13,8 +14,8 @@ interface FestivalTab {
 }
 
 const TABS: FestivalTab[] = [
-  { id: 'bwc', label: 'Brahmaputra Winter Carnival', dates: '23–31 Dec' },
-  { id: 'dd', label: 'Discount Dhamaka', dates: '27 Nov – 2 Dec' },
+  { id: 'bwc', label: 'Christmas Town', dates: '23–27 Dec' },
+  // { id: 'dd', label: 'Discount Dhamaka', dates: '27 Nov – 2 Dec' },
   { id: 'lgf', label: 'Little Guwahati Festival', dates: '14–15 Nov' },
 ]
 
@@ -127,8 +128,10 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.replace('#', '')
-      if (hash === 'lgf' || hash === 'dd' || hash === 'bwc') {
-        setActiveTab(hash)
+      if (hash === 'lgf' || hash === 'bwc' || hash === 'ct' || hash === 'christmas') {
+        setActiveTab(hash === 'ct' || hash === 'christmas' ? 'bwc' : hash as FestivalId)
+      } else if (hash === 'dd') {
+        setActiveTab('bwc')
       }
     }
   }, [])
@@ -1794,8 +1797,8 @@ export default function Home() {
         </main>
       )}
 
-      {/* ============ DISCOUNT DHAMAKA ============ */}
-      {activeTab === 'dd' && (
+      {/* ============ DISCOUNT DHAMAKA (Hidden for now) ============ */}
+      {false && activeTab === 'dd' && (
         <main id="top" className="animate-fade-in" style={{ background: '#FFD400', color: '#111', overflowX: 'hidden' }}>
           <section style={{ maxWidth: 1240, margin: '0 auto', padding: 'clamp(40px, 8vw, 96px) 16px clamp(36px, 6vw, 72px)', display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
@@ -1880,112 +1883,9 @@ export default function Home() {
         </main>
       )}
 
-      {/* ============ BRAHMAPUTRA WINTER CARNIVAL ============ */}
+      {/* ============ CHRISTMAS TOWN ============ */}
       {activeTab === 'bwc' && (
-        <main id="top" className="animate-fade-in" style={{ background: '#2A1612', color: '#F7EBDD', overflowX: 'hidden' }}>
-          <section className="bwc-snow" style={{ position: 'relative' }}>
-            <svg viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true" style={{ display: 'block', width: '100%', height: 'clamp(40px, 6vw, 70px)' }}>
-              <path d="M0 10 Q180 70 360 14 T720 14 T1080 14 T1440 10" fill="none" stroke="#5a3a2c" strokeWidth="2"></path>
-              <circle cx="60" cy="30" r="7" fill="#F5C46B" className="glow-bulb"></circle>
-              <circle cx="150" cy="44" r="7" fill="#E07A3C"></circle>
-              <circle cx="250" cy="38" r="7" fill="#F7EBDD"></circle>
-              <circle cx="330" cy="20" r="7" fill="#F5C46B" className="glow-bulb"></circle>
-              <circle cx="430" cy="32" r="7" fill="#E07A3C"></circle>
-              <circle cx="530" cy="44" r="7" fill="#F5C46B" className="glow-bulb"></circle>
-              <circle cx="620" cy="34" r="7" fill="#F7EBDD"></circle>
-              <circle cx="700" cy="17" r="7" fill="#E07A3C"></circle>
-              <circle cx="790" cy="32" r="7" fill="#F5C46B" className="glow-bulb"></circle>
-              <circle cx="890" cy="44" r="7" fill="#F7EBDD"></circle>
-              <circle cx="980" cy="34" r="7" fill="#E07A3C"></circle>
-              <circle cx="1060" cy="17" r="7" fill="#F5C46B" className="glow-bulb"></circle>
-              <circle cx="1150" cy="32" r="7" fill="#E07A3C"></circle>
-              <circle cx="1250" cy="43" r="7" fill="#F5C46B" className="glow-bulb"></circle>
-              <circle cx="1340" cy="32" r="7" fill="#F7EBDD"></circle>
-              <circle cx="1420" cy="14" r="7" fill="#E07A3C"></circle>
-            </svg>
-            <div style={{ maxWidth: 1240, margin: '0 auto', padding: 'clamp(36px, 7vw, 96px) 16px clamp(48px, 9vw, 120px)', display: 'flex', flexDirection: 'column', gap: 18, alignItems: 'center', textAlign: 'center' }}>
-              <span style={{ fontWeight: 600, fontSize: 'clamp(12px, 2.5vw, 15px)', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#F5C46B' }}>City Mela presents</span>
-              <h1 style={{ margin: 0, fontFamily: "'DM Serif Display', serif", fontWeight: 400, lineHeight: 0.98, fontSize: 'clamp(42px, 9vw, 130px)', color: '#F7EBDD' }}>
-                Brahmaputra<br /><em style={{ color: '#F5C46B', fontStyle: 'italic' }}>Winter Carnival</em>
-              </h1>
-              <p style={{ margin: 0, fontSize: 'clamp(16px, 2.5vw, 24px)', maxWidth: 660, lineHeight: 1.45, color: '#e6d3c0' }}>
-                Nine cosy days to close the year — warm food, live music, bonfire glow and the whole city wrapped up in shawls by the river.
-              </p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 10, marginTop: 6 }}>
-                <div style={{ background: '#F7EBDD', color: '#2A1612', padding: '12px 22px', borderRadius: 16, display: 'flex', flexDirection: 'column', gap: 2, boxShadow: '0 0 0 4px #9E2A2B' }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#9E2A2B' }}>Dates</span>
-                  <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(20px, 4vw, 26px)' }}>23–31 Dec 2026</span>
-                </div>
-                <div style={{ background: '#F7EBDD', color: '#2A1612', padding: '12px 22px', borderRadius: 16, display: 'flex', flexDirection: 'column', gap: 2, boxShadow: '0 0 0 4px #2F5240' }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#2F5240' }}>Venue</span>
-                  <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(20px, 4vw, 26px)' }}>[VENUE], Guwahati</span>
-                </div>
-              </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12, marginTop: 12 }}>
-                <button
-                  type="button"
-                  id="bwc-get-notified-btn"
-                  onClick={openAlertModal}
-                  style={{ textDecoration: 'none', background: '#E07A3C', color: '#2A1612', fontWeight: 600, padding: '12px 24px', borderRadius: 999, minHeight: 46, boxSizing: 'border-box', border: 'none', cursor: 'pointer', fontSize: 15 }}
-                >
-                  Get notified
-                </button>
-                <button
-                  type="button"
-                  id="bwc-stalls-btn"
-                  onClick={openVendorModal}
-                  style={{ textDecoration: 'none', border: '2px solid #F5C46B', background: 'transparent', color: '#F5C46B', fontWeight: 600, padding: '10px 22px', borderRadius: 999, minHeight: 46, boxSizing: 'border-box', cursor: 'pointer', fontSize: 15 }}
-                >
-                  Stalls &amp; sponsorship
-                </button>
-              </div>
-            </div>
-          </section>
-
-          <div className="bwc-knit" aria-hidden="true"></div>
-
-          <section style={{ background: '#F7EBDD', color: '#2A1612' }}>
-            <div style={{ maxWidth: 1240, margin: '0 auto', padding: 'clamp(40px, 7vw, 88px) 16px', display: 'flex', flexDirection: 'column', gap: 24 }}>
-              <h2 style={{ margin: 0, fontFamily: "'DM Serif Display', serif", fontWeight: 400, fontSize: 'clamp(30px, 5vw, 56px)', lineHeight: 1, color: '#9E2A2B' }}>Grab a shawl. Come out.</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
-                <div style={{ background: '#fffaf3', border: '2px solid #ead6bf', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <span style={{ width: 48, height: 48, borderRadius: '50%', background: '#9E2A2B', color: '#F7EBDD', fontFamily: "'DM Serif Display', serif", fontSize: 22, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>I</span>
-                  <h3 style={{ margin: 0, fontFamily: "'DM Serif Display', serif", fontWeight: 400, fontSize: 'clamp(22px, 4vw, 28px)' }}>Winter food &amp; drink</h3>
-                  <p style={{ margin: 0, lineHeight: 1.5, color: '#5a3a2c', fontSize: 15 }}>Smoky grills, traditional winter pitha, gourmet hot chocolate, artisanal tea &amp; coffee, and 35+ curated food stalls facing the river.</p>
-                </div>
-                <div style={{ background: '#fffaf3', border: '2px solid #ead6bf', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <span style={{ width: 48, height: 48, borderRadius: '50%', background: '#E07A3C', color: '#2A1612', fontFamily: "'DM Serif Display', serif", fontSize: 22, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>II</span>
-                  <h3 style={{ margin: 0, fontFamily: "'DM Serif Display', serif", fontWeight: 400, fontSize: 'clamp(22px, 4vw, 28px)' }}>Live music nights</h3>
-                  <p style={{ margin: 0, lineHeight: 1.5, color: '#5a3a2c', fontSize: 15 }}>Acoustic riverfront stages, indie singer-songwriters, folk fusion ensembles, and cozy bonfire music sessions under the winter stars.</p>
-                </div>
-                <div style={{ background: '#fffaf3', border: '2px solid #ead6bf', borderRadius: 24, padding: 'clamp(20px, 4vw, 28px)', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <span style={{ width: 48, height: 48, borderRadius: '50%', background: '#2F5240', color: '#F7EBDD', fontFamily: "'DM Serif Display', serif", fontSize: 22, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>III</span>
-                  <h3 style={{ margin: 0, fontFamily: "'DM Serif Display', serif", fontWeight: 400, fontSize: 'clamp(22px, 4vw, 28px)' }}>New Year's Eve finale</h3>
-                  <p style={{ margin: 0, lineHeight: 1.5, color: '#5a3a2c', fontSize: 15 }}>The carnival closes on 31 December with fireworks over the Brahmaputra, midnight countdown, and an unforgettable celebration.</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <div className="bwc-knit" aria-hidden="true"></div>
-
-          <section style={{ background: '#2F5240', color: '#F7EBDD' }}>
-            <div style={{ maxWidth: 1240, margin: '0 auto', padding: 'clamp(40px, 7vw, 88px) 16px', display: 'flex', flexWrap: 'wrap', gap: 20, alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ flex: '999 1 300px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <h2 style={{ margin: 0, fontFamily: "'DM Serif Display', serif", fontWeight: 400, fontSize: 'clamp(28px, 5vw, 52px)', lineHeight: 1.05 }}>Be part of Guwahati's year-end</h2>
-                <p style={{ margin: 0, fontSize: 16, lineHeight: 1.5, maxWidth: 620, color: '#dfe9e2' }}>Food stalls, retail spaces and sponsorship slots open for brands that want the last nine days of the year.</p>
-              </div>
-              <button
-                type="button"
-                id="bwc-enquire-now-btn"
-                onClick={openVendorModal}
-                style={{ textDecoration: 'none', background: '#F5C46B', color: '#2A1612', fontWeight: 600, fontSize: 16, padding: '14px 26px', borderRadius: 999, minHeight: 48, boxSizing: 'border-box', border: 'none', cursor: 'pointer' }}
-              >
-                Enquire now
-              </button>
-            </div>
-          </section>
-        </main>
+        <ChristmasTownSection />
       )}
 
       {/* Global Footer */}

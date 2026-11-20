@@ -1,0 +1,1264 @@
+
+:root, .christmas-town-section {
+  --maroon: #D7102E;
+  --maroon-deep: #A80C24;
+  --pine: #0F3D2E;
+  --pine-deep: #0A2A20;
+  --mint: #33D1A0;
+  --cream: #FFF7F2;
+  --paper: #FFFFFF;
+  --sand: #F6D9DE;
+  --gold: #FFE45C;
+  --ink: #2A0F12;
+  --muted: #6A4A4A;
+  --tree: #3FAE6A;
+  --display: "Lilita One", "Arial Rounded MT Bold", "Trebuchet MS", system-ui, sans-serif;
+  --body: "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --r: 22px;
+  --wrap: 1120px;
+}
+
+.christmas-town-section {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.christmas-town-section img {
+  max-width: 100%;
+  display: block;
+}
+
+.christmas-town-section a {
+  color: inherit;
+}
+
+.christmas-town-section .wrap {
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.christmas-town-section h1,
+.christmas-town-section h2,
+.christmas-town-section h3 {
+  font-family: var(--display);
+  font-weight: 400;
+  line-height: 1.05;
+  margin: 0;
+  text-wrap: balance;
+  letter-spacing: .2px;
+}
+
+.christmas-town-section h1 {
+  font-size: clamp(52px, 9vw, 112px);
+}
+
+.christmas-town-section h2 {
+  font-size: clamp(34px, 5vw, 54px);
+}
+
+.christmas-town-section h3 {
+  font-size: 24px;
+}
+
+.christmas-town-section p {
+  margin: 0;
+}
+
+.christmas-town-section .eyebrow {
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.christmas-town-section .lead {
+  font-size: clamp(18px, 2.1vw, 21px);
+  max-width: 62ch;
+}
+
+.christmas-town-section :focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* buttons */
+.christmas-town-section .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--body);
+  font-weight: 900;
+  font-size: 17px;
+  padding: 15px 26px;
+  border-radius: 999px;
+  border: 0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.christmas-town-section .btn-gold {
+  background: var(--gold) !important;
+  color: var(--ink) !important;
+  box-shadow: 0 5px 0 #C9A800;
+}
+
+.christmas-town-section .btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #C9A800;
+}
+
+.christmas-town-section .btn-gold:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #C9A800;
+}
+
+.christmas-town-section .btn-ghost {
+  background: transparent;
+  color: var(--cream);
+  box-shadow: inset 0 0 0 2px rgba(251, 245, 236, .55);
+}
+
+.christmas-town-section .btn-ghost:hover {
+  box-shadow: inset 0 0 0 2px var(--cream);
+}
+
+.christmas-town-section .btn-maroon {
+  background: var(--maroon);
+  color: var(--cream);
+  box-shadow: 0 5px 0 var(--maroon-deep);
+}
+
+.christmas-town-section .btn-maroon:hover {
+  transform: translateY(-2px);
+}
+
+.christmas-town-section .btn-wa {
+  background: #1F8F55;
+  color: #fff;
+  box-shadow: 0 5px 0 #146B3E;
+}
+
+/* header */
+.christmas-town-section header.top {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 50;
+  background: var(--cream);
+  box-shadow: 0 2px 0 var(--sand);
+}
+
+.christmas-town-section header.top .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 10px;
+}
+
+.christmas-town-section header.top img {
+  height: 60px;
+  width: auto;
+}
+
+.christmas-town-section nav.links {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+
+.christmas-town-section nav.links a {
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 15px;
+  opacity: .88;
+}
+
+.christmas-town-section nav.links a:hover {
+  opacity: 1;
+  color: var(--maroon);
+}
+
+.christmas-town-section nav.links .btn {
+  padding: 10px 18px;
+  font-size: 15px;
+  opacity: 1;
+}
+
+@media (max-width: 860px) {
+  .christmas-town-section nav.links a:not(.btn) {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .christmas-town-section header.top img {
+    height: 44px;
+  }
+  .christmas-town-section nav.links .btn {
+    padding: 9px 14px;
+    font-size: 14px;
+  }
+}
+
+/* hero */
+.christmas-town-section .hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--maroon);
+  color: var(--cream);
+}
+
+.christmas-town-section #snow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.christmas-town-section .hero .wrap {
+  position: relative;
+  padding-block: 56px 0;
+  display: grid;
+  grid-template-columns: minmax(0, 820px);
+  gap: 40px;
+}
+
+.christmas-town-section .hero h1 {
+  font-size: clamp(52px, 9vw, 112px);
+  text-shadow: 0 6px 0 var(--ink);
+  color: var(--cream);
+}
+
+.christmas-town-section .hero h1 em {
+  font-style: normal;
+  color: var(--gold);
+}
+
+.christmas-town-section .hero .eyebrow {
+  color: var(--gold);
+  margin-bottom: 14px;
+}
+
+.christmas-town-section .hero .lead {
+  margin-top: 20px;
+  color: #F3E6D6;
+}
+
+.christmas-town-section .facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.christmas-town-section .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(251, 245, 236, .1);
+  border: 1.5px solid rgba(251, 245, 236, .28);
+  color: var(--cream);
+  font-weight: 800;
+  font-size: 15px;
+  padding: 8px 14px;
+  border-radius: 999px;
+}
+
+.christmas-town-section .chip b {
+  color: var(--gold);
+  font-weight: 900;
+}
+
+.christmas-town-section .cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.christmas-town-section .count {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+  font-weight: 800;
+  align-items: baseline;
+  flex-wrap: wrap;
+  color: #F3E6D6;
+}
+
+.christmas-town-section .count strong {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 40px;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.christmas-town-section .ground {
+  position: relative;
+  margin-top: 48px;
+}
+
+.christmas-town-section .gamusa {
+  height: 64px;
+  background-color: #FFFFFF;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='64'%3E%3Crect y='6' width='48' height='8' fill='%23D7102E'/%3E%3Crect y='50' width='48' height='8' fill='%23D7102E'/%3E%3Cpath d='M24 16L40 32L24 48L8 32Z' fill='%23D7102E'/%3E%3Cpath d='M24 25L31 32L24 39L17 32Z' fill='%23FFFFFF'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 48px 64px;
+}
+
+.christmas-town-section .candy {
+  height: 28px;
+  background: repeating-linear-gradient(135deg, #FFFFFF 0 14px, #D7102E 14px 28px);
+}
+
+@media (max-width: 860px) {
+  .christmas-town-section .hero .wrap {
+    grid-template-columns: 1fr;
+    padding-top: 36px;
+  }
+}
+
+/* sections */
+.christmas-town-section section {
+  padding-block: 80px;
+}
+
+.christmas-town-section .sec-head {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 38px;
+}
+
+.christmas-town-section .sec-head .eyebrow {
+  color: var(--maroon);
+}
+
+.christmas-town-section .pine {
+  background: var(--pine);
+  color: var(--cream);
+}
+
+.christmas-town-section .pine .sec-head .eyebrow {
+  color: var(--gold);
+}
+
+.christmas-town-section .pine .lead {
+  color: #DCE7DF;
+}
+
+/* zones */
+.christmas-town-section .zones {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.christmas-town-section .zone {
+  background: var(--paper);
+  border-radius: var(--r);
+  padding: 24px 24px 26px;
+  box-shadow: 0 6px 0 var(--sand);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.christmas-town-section .zone .ico {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: var(--maroon);
+  color: var(--gold);
+  font-family: var(--display);
+  font-size: 22px;
+}
+
+.christmas-town-section .zone:nth-child(3n+2) .ico {
+  background: var(--pine);
+}
+
+.christmas-town-section .zone:nth-child(3n) .ico {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.christmas-town-section .zone p {
+  color: var(--muted);
+}
+
+.christmas-town-section .zone.feature {
+  grid-column: span 2;
+  grid-row: span 2;
+  justify-content: flex-end;
+  background: var(--maroon);
+  color: var(--cream);
+  box-shadow: 0 6px 0 var(--maroon-deep);
+}
+
+.christmas-town-section .zone.feature p {
+  color: #F3E6D6;
+}
+
+.christmas-town-section .zone.feature h3 {
+  font-size: 34px;
+  color: var(--gold);
+}
+
+@media (max-width: 860px) {
+  .christmas-town-section .zones {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .christmas-town-section .zone.feature {
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .christmas-town-section .zones {
+    grid-template-columns: 1fr;
+  }
+  .christmas-town-section .zone.feature {
+    grid-column: auto;
+  }
+}
+
+/* days */
+.christmas-town-section .days {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.christmas-town-section .day {
+  background: rgba(251, 245, 236, .06);
+  border: 1.5px solid rgba(251, 245, 236, .18);
+  border-radius: var(--r);
+  padding: 20px 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.christmas-town-section .day .date {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.christmas-town-section .day .date strong {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 46px;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.christmas-town-section .day .date span {
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #CFE0D5;
+}
+
+.christmas-town-section .day h3 {
+  font-size: 22px;
+  color: var(--cream);
+}
+
+.christmas-town-section .day ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #DCE7DF;
+  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.christmas-town-section .day.big {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--ink);
+}
+
+.christmas-town-section .day.big h3 {
+  color: var(--ink);
+}
+.christmas-town-section .day.big ul {
+  color: var(--ink);
+}
+.christmas-town-section .day.big .date strong {
+  color: var(--maroon);
+}
+.christmas-town-section .day.big .date span {
+  color: var(--maroon);
+}
+
+.christmas-town-section .note {
+  margin-top: 22px;
+  font-size: 15px;
+  color: #CFE0D5;
+}
+
+@media (max-width: 980px) {
+  .christmas-town-section .days {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .christmas-town-section .day:last-child {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 520px) {
+  .christmas-town-section .days {
+    grid-template-columns: 1fr;
+  }
+  .christmas-town-section .day:last-child {
+    grid-column: auto;
+  }
+}
+
+/* contests */
+.christmas-town-section .contests {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.christmas-town-section .contest {
+  background: var(--paper);
+  border-radius: var(--r);
+  padding: 22px 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 6px 0 var(--sand);
+  min-width: 0;
+}
+
+.christmas-town-section .contest .meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.christmas-town-section .contest .when {
+  color: var(--maroon);
+}
+
+.christmas-town-section .fee {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #E3F1E8;
+  color: #1D5A3A;
+}
+
+.christmas-town-section .fee.paid {
+  background: #FCEFD0;
+  color: #7A5410;
+}
+
+.christmas-town-section .contest p {
+  color: var(--muted);
+  flex: 1;
+}
+
+.christmas-town-section .contest button {
+  align-self: flex-start;
+  background: none;
+  border: 0;
+  padding: 6px 0;
+  font: inherit;
+  font-weight: 900;
+  color: var(--maroon);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 860px) {
+  .christmas-town-section .contests {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .christmas-town-section .contests {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* register */
+.christmas-town-section #register {
+  background: var(--maroon);
+  color: var(--cream);
+  position: relative;
+}
+
+.christmas-town-section #register .sec-head .eyebrow {
+  color: var(--gold);
+}
+
+.christmas-town-section #register .lead {
+  color: #F3E6D6;
+}
+
+.christmas-town-section .reg {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.christmas-town-section .panel {
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 28px;
+  padding: 26px;
+  box-shadow: 0 8px 0 var(--maroon-deep);
+}
+
+.christmas-town-section .tabs {
+  display: flex;
+  background: var(--sand);
+  border-radius: 999px;
+  padding: 5px;
+  gap: 4px;
+  margin-bottom: 22px;
+}
+
+.christmas-town-section .tabs button {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 900;
+  font-size: 15px;
+  padding: 11px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.christmas-town-section .tabs button[aria-selected="true"] {
+  background: var(--maroon);
+  color: var(--cream);
+}
+
+.christmas-town-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.christmas-town-section .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 520px) {
+  .christmas-town-section .row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.christmas-town-section label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 14px;
+  min-width: 0;
+}
+
+.christmas-town-section label small {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.christmas-town-section input,
+.christmas-town-section select,
+.christmas-town-section textarea {
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--cream);
+  border: 2px solid #E3D3BE;
+  border-radius: 14px;
+  padding: 12px 14px;
+  width: 100%;
+  min-width: 0;
+}
+
+.christmas-town-section input:focus,
+.christmas-town-section select:focus {
+  outline: none;
+  border-color: var(--maroon);
+}
+
+.christmas-town-section .check {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.christmas-town-section .check input {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  margin-top: 2px;
+  accent-color: var(--maroon);
+}
+
+.christmas-town-section .err {
+  color: #B3261E;
+  font-weight: 800;
+  font-size: 14px;
+  min-height: 1px;
+}
+
+.christmas-town-section .side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.christmas-town-section .side .card {
+  background: rgba(251, 245, 236, .08);
+  border: 1.5px solid rgba(251, 245, 236, .22);
+  border-radius: var(--r);
+  padding: 20px 22px;
+}
+
+.christmas-town-section .side h3 {
+  font-size: 22px;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.christmas-town-section .side ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #F3E6D6;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+@media (max-width: 900px) {
+  .christmas-town-section .reg {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* pass */
+.christmas-town-section .pass {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.christmas-town-section .ticket {
+  background: var(--maroon);
+  color: var(--cream);
+  border-radius: 22px;
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 18px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.christmas-town-section .ticket::after {
+  content: "";
+  position: absolute;
+  inset: auto -10px -10px auto;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(242, 193, 78, .12);
+}
+
+.christmas-town-section .ticket .code {
+  font-family: var(--display);
+  font-size: 34px;
+  color: var(--gold);
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
+.christmas-town-section .ticket .small {
+  font-size: 14px;
+  color: #F3E6D6;
+}
+
+.christmas-town-section .qr {
+  background: #fff;
+  padding: 8px;
+  border-radius: 12px;
+  width: 132px;
+  height: 132px;
+  display: grid;
+  place-items: center;
+}
+
+.christmas-town-section .qr img,
+.christmas-town-section .qr canvas {
+  width: 116px !important;
+  height: 116px !important;
+}
+
+.christmas-town-section .pass p {
+  color: var(--muted);
+}
+
+.christmas-town-section .pass .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.christmas-town-section .linkbtn {
+  background: none;
+  border: 0;
+  font: inherit;
+  font-weight: 800;
+  color: var(--maroon);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+@media (max-width: 420px) {
+  .christmas-town-section .ticket {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* proof */
+.christmas-town-section .proof {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: 40px;
+  align-items: center;
+}
+
+.christmas-town-section .big-num {
+  font-family: var(--display);
+  font-size: clamp(72px, 11vw, 128px);
+  color: var(--maroon);
+  line-height: .9;
+}
+
+.christmas-town-section .photos {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: 120px;
+  gap: 10px;
+}
+
+.christmas-town-section .photos figure {
+  margin: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--sand);
+}
+
+.christmas-town-section .photos img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.christmas-town-section .photos .a {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+
+.christmas-town-section .photos .b {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.christmas-town-section .photos .c {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.christmas-town-section .photos .d {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.christmas-town-section .photos .e {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.christmas-town-section .media {
+  margin-top: 24px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.christmas-town-section .media b {
+  color: var(--ink);
+}
+
+@media (max-width: 860px) {
+  .christmas-town-section .proof {
+    grid-template-columns: 1fr;
+  }
+  .christmas-town-section .photos {
+    grid-auto-rows: 80px;
+  }
+}
+
+/* visit + partner */
+.christmas-town-section .two {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.christmas-town-section .box {
+  background: var(--paper);
+  border-radius: var(--r);
+  padding: 28px;
+  box-shadow: 0 6px 0 var(--sand);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.christmas-town-section .box.dark {
+  background: var(--pine);
+  color: var(--cream);
+  box-shadow: 0 6px 0 var(--pine-deep);
+}
+
+.christmas-town-section .box.dark p {
+  color: #DCE7DF;
+}
+
+.christmas-town-section .box p {
+  color: var(--muted);
+}
+
+.christmas-town-section .contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.christmas-town-section .num {
+  font-weight: 900;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  user-select: all;
+}
+
+.christmas-town-section .copy {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
+  background: transparent;
+  color: inherit;
+  padding: 5px 12px;
+  cursor: pointer;
+  opacity: .85;
+}
+
+.christmas-town-section dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 18px;
+}
+
+.christmas-town-section dt {
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--maroon);
+  padding-top: 3px;
+}
+
+.christmas-town-section dd {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .christmas-town-section .two {
+    grid-template-columns: 1fr;
+  }
+}
+
+.christmas-town-section .faq {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.christmas-town-section details {
+  background: var(--paper);
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 0 var(--sand);
+}
+
+.christmas-town-section summary {
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.christmas-town-section details p {
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+.christmas-town-section .sizes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.christmas-town-section .size {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper);
+  border-radius: var(--r);
+  padding: 24px;
+  box-shadow: 0 6px 0 var(--sand);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  border: 3px solid transparent;
+  min-width: 0;
+}
+
+.christmas-town-section .size:has(input:checked) {
+  border-color: var(--maroon);
+}
+
+.christmas-town-section .size input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.christmas-town-section .size .dim {
+  font-family: var(--display);
+  font-size: 44px;
+  color: var(--maroon);
+  line-height: 1;
+}
+
+.christmas-town-section .size .dim small {
+  font-family: var(--body);
+  font-weight: 900;
+  font-size: 15px;
+  color: var(--muted);
+  margin-left: 6px;
+}
+
+.christmas-town-section .size .price {
+  font-weight: 900;
+  font-size: 28px;
+  font-variant-numeric: tabular-nums;
+}
+
+.christmas-town-section .size .price small {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.christmas-town-section .size p {
+  color: var(--muted);
+}
+
+.christmas-town-section .stall-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.christmas-town-section .stall-form {
+  background: var(--paper);
+  border-radius: 28px;
+  padding: 26px;
+  box-shadow: 0 8px 0 var(--sand);
+}
+
+@media (max-width: 900px) {
+  .christmas-town-section .stall-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .christmas-town-section .sizes {
+    grid-template-columns: 1fr;
+  }
+}
+
+.christmas-town-section .disc {
+  font-size: 14px;
+  font-weight: 400;
+  color: #EAD9C8;
+  margin-top: 14px;
+  max-width: 60ch;
+}
+
+.christmas-town-section .disc-d {
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.christmas-town-section .disc-s {
+  font-size: 14px;
+  font-weight: 400;
+  color: #EAD9C8;
+  margin-top: 12px;
+}
+
+.christmas-town-section .bs {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, .6fr);
+  gap: 36px;
+  align-items: center;
+}
+
+.christmas-town-section .bs-list {
+  margin: 20px 0 0;
+  padding-left: 20px;
+  color: #DCE7DF;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.christmas-town-section .bs-list b {
+  color: var(--gold);
+}
+
+.christmas-town-section .bs-score {
+  background: var(--maroon);
+  border-radius: 28px;
+  padding: 28px;
+  text-align: center;
+  box-shadow: 0 8px 0 var(--maroon-deep);
+  transform: rotate(2deg);
+}
+
+.christmas-town-section .bs-big {
+  font-family: var(--display);
+  font-size: clamp(64px, 9vw, 96px);
+  color: var(--gold);
+  line-height: 1;
+}
+
+.christmas-town-section .bs-sub {
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-size: 13px;
+  color: #F3E6D6;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 760px) {
+  .christmas-town-section .bs {
+    grid-template-columns: 1fr;
+  }
+  .christmas-town-section .bs-score {
+    transform: none;
+  }
+}
+
+.christmas-town-section footer.ct-footer {
+  background: var(--maroon-deep);
+  color: #EAD9C8;
+  padding-block: 48px;
+}
+
+.christmas-town-section footer.ct-footer .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-end;
+}
+
+.christmas-town-section footer.ct-footer .sign {
+  font-family: var(--display);
+  font-size: clamp(30px, 4.5vw, 46px);
+  color: var(--gold);
+  line-height: 1;
+}
+
+.christmas-town-section footer.ct-footer p {
+  font-size: 15px;
+}
+
+.christmas-town-section footer.ct-footer a {
+  color: var(--cream);
+}
+
+.christmas-town-section .toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--cream);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 14px;
+  z-index: 70;
+}
